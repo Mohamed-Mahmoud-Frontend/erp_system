@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color palette */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-900: #1e3a8a;
+
+  /* Sidebar */
+  --sidebar-width: 16rem;
+  --header-height: 4rem;
 }
 
+/* ── Tailwind v4 theme extension ───────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-cairo), "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+
+  /* Brand colors */
+  --color-brand-50: var(--color-primary-50);
+  --color-brand-100: var(--color-primary-100);
+  --color-brand-500: var(--color-primary-500);
+  --color-brand-600: var(--color-primary-600);
+  --color-brand-700: var(--color-primary-700);
+  --color-brand-900: var(--color-primary-900);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base styles ───────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #171717;
+  font-family: var(--font-sans);
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── RTL utilities ─────────────────────────────────────────────────────── */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* ── Focus visible ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Scrollbar (webkit) ────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

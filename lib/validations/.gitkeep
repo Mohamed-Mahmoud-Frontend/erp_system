@@ -1,0 +1,8 @@
+# Validation schemas
+
+One Zod schema file per entity. These will be populated in subsequent steps.
+
+Example naming convention:
+- `client.ts` — schemas for the `clients` table
+- `invoice.ts` — schemas for `invoices` table
+- etc.
