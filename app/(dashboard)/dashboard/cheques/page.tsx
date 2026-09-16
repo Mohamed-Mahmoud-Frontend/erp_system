@@ -17,7 +17,7 @@ export default async function ChequesPage({ searchParams }: { searchParams: Prom
     {error ? <p role="alert" className="text-red-700">تعذر تحميل الشيكات. أعد المحاولة.</p> : <div className="bg-white border rounded-xl overflow-x-auto"><table className="w-full text-sm text-right">
       <thead><tr>{["الفاتورة / العميل", "المبلغ", "الاستحقاق", "الحالة", "الإجراءات"].map(label => <th key={label} className="p-4">{label}</th>)}</tr></thead>
       <tbody>{data.map(cheque => <tr key={cheque.id} data-cheque-id={cheque.id} className="border-t">
-        <td className="p-4"><Link className="text-blue-700 underline" href={`/dashboard/invoices/${cheque.payments.invoice_id}`}>{cheque.payments.invoices.invoice_number}</Link><p>{cheque.payments.invoices.orders.clients.name}</p></td>
+        <td className="p-4"><Link className="text-blue-700 underline" href={`/dashboard/invoices/${cheque.payments.invoice_id}`}>{cheque.payments.invoices.invoice_number}</Link><p>{cheque.payments.invoices?.orders?.clients?.name ?? "عميل غير محدد"}</p></td>
         <td className="p-4">{money(cheque.payments.amount)} ج.م</td><td className="p-4">{cheque.due_date}</td>
         <td className={`p-4 ${cheque.status === "bounced" ? "text-red-700" : cheque.status === "cleared" ? "text-green-700" : "text-amber-700"}`}>{cheque.status === "pending" ? "قيد الانتظار" : cheque.status === "cleared" ? "تم التحصيل" : "مرفوض"}</td>
         <td className="p-4"><ChequeStatusForm id={cheque.id} status={cheque.status} /></td>

@@ -3,6 +3,7 @@ import ClientStatement from "./statement";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { statusLabels } from "@/lib/manufacturing";
 
 export default async function ClientDetailPage({
   params,
@@ -129,7 +130,7 @@ export default async function ClientDetailPage({
                           order.status === 'in_production' ? 'bg-amber-100 text-amber-800' : 
                           'bg-slate-100 text-slate-800'}
                       `}>
-                        {order.status}
+                        {statusLabels[order.status] ?? order.status}
                       </span>
                     </td>
                   </tr>
