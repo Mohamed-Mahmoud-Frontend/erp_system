@@ -1,11 +1,11 @@
 import { requirePermission } from "@/lib/access";
 import Decimal from "decimal.js";
-import {money} from "@/lib/billing";
+import { money } from "@/lib/billing";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "الموردين | نظام إدارة المصنع",
+  title: "الموردون والحسابات | نظام إدارة المصنع",
 };
 
 export default async function SuppliersPage() {
@@ -18,50 +18,93 @@ export default async function SuppliersPage() {
     .select("*")
     .order("name", { ascending: true });
 
-  const totalOwed = suppliers?.reduce((sum, s) => sum.plus(s.balance), new Decimal(0)) ?? new Decimal(0);
+  const supplierList = suppliers || [];
+  const totalOwed = supplierList.reduce(
+    (sum, s) => sum.plus(s.balance),
+    new Decimal(0)
+  );
 
-  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
+  if (error) {
+    return (
+      <div role="alert" className="p-4 rounded-xl bg-red-50 text-red-700 border border-red-200">
+        تعذر تحميل بيانات الموردين. أعد المحاولة.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">حسابات الموردين</h1>
-          <p className="text-slate-500 mt-1">إجمالي المستحقات للموردين: {money(totalOwed)} ج.م</p>
+          <h1 className="text-2xl font-black text-slate-900">سجل الموردين والمشتريات</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">
+            متابعة أرصدة موردي الخامات وقطع الغيار وكشوف الحسابات والدفعات
+          </p>
         </div>
         <Link
           href="/dashboard/suppliers/new"
-          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs hover:shadow-md transition-all"
         >
           + إضافة مورد جديد
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+          <p className="text-xs font-bold text-slate-500">عدد الموردين المسجلين</p>
+          <p className="text-xl font-black text-slate-900 mt-1 font-mono">
+            {supplierList.length}
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+          <p className="text-xs font-bold text-red-700">إجمالي المستحقات للموردين</p>
+          <p className="text-xl font-black text-red-600 mt-1 font-mono">
+            {money(totalOwed)} <span className="text-xs font-normal font-sans text-slate-500">ج.م</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm">
+          <table className="w-full text-right text-sm">
+            <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-600">
               <tr>
-                <th className="px-6 py-4 font-semibold">اسم المورد</th>
-                <th className="px-6 py-4 font-semibold">الرصيد المستحق (له)</th>
-                <th className="px-6 py-4 font-semibold text-center">الإجراءات</th>
+                <th className="px-6 py-4 font-bold">اسم المورد</th>
+                <th className="px-6 py-4 font-bold">الرصيد المستحق (له)</th>
+                <th className="px-6 py-4 font-bold text-center">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {suppliers?.length === 0 ? (
+              {supplierList.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-slate-500">
-                    لا يوجد موردين حالياً
+                  <td colSpan={3} className="px-6 py-12 text-center text-slate-400">
+                    لا يوجد موردين مسجلين حالياً
                   </td>
                 </tr>
               ) : (
-                suppliers?.map((supplier) => (
-                  <tr key={supplier.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">{supplier.name}</td>
-                    <td className="px-6 py-4 font-bold text-red-600">
-                      {money(supplier.balance)} ج.م
+                supplierList.map((supplier) => (
+                  <tr key={supplier.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-900">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs border border-slate-200">
+                          🏢
+                        </span>
+                        <span>{supplier.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-mono font-bold text-red-600 text-base">
+                      {money(supplier.balance)} <span className="text-xs font-normal font-sans text-slate-500">ج.م</span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Link className="underline text-blue-700" href={`/dashboard/suppliers/${supplier.id}`}>كشف الحساب / تسجيل معاملة</Link>
+                      <Link
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-xs"
+                        href={`/dashboard/suppliers/${supplier.id}`}
+                      >
+                        كشف الحساب / تسجيل معاملة 📄
+                      </Link>
                     </td>
                   </tr>
                 ))

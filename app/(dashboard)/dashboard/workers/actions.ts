@@ -113,3 +113,63 @@ export async function recordWorkerTransactionAction(prevState: unknown, formData
   revalidatePath("/dashboard/workers/payouts");
   return { success: true, message: "تم التسجيل بنجاح" };
 }
+
+export async function deleteWorkerAction(workerId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "يجب تسجيل الدخول." };
+
+  // Try direct deletion first (succeeds if no FK references exist)
+  const { error: deleteError } = await supabase.from("workers").delete().eq("id", workerId);
+
+  if (!deleteError) {
+    revalidatePath("/dashboard/workers");
+    revalidatePath("/dashboard/workers/attendance");
+    revalidatePath("/dashboard/workers/payouts");
+    return { success: true, message: "تم حذف العامل نهائياً من النظام." };
+  }
+
+  // If deletion fails due to foreign key constraints (records exist), mark as stopped
+  const { data: worker } = await supabase.from("workers").select("name").eq("id", workerId).single();
+  if (worker) {
+    const cleanName = worker.name.replace(/\s*\(متوقف\)\s*$/, "").trim();
+    const stoppedName = `${cleanName} (متوقف)`;
+    await supabase.from("workers").update({ name: stoppedName }).eq("id", workerId);
+
+    revalidatePath("/dashboard/workers");
+    revalidatePath("/dashboard/workers/attendance");
+    revalidatePath("/dashboard/workers/payouts");
+    return {
+      success: true,
+      message: "تم إيقاف العامل عن العمل وحفظ أرشيف سجلات الحضور والرواتب السابقة.",
+    };
+  }
+
+  return { success: false, message: "تعذر إتمام العملية. يرجى المحاولة لاحقاً." };
+}
+
+export async function toggleWorkerStatusAction(workerId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "يجب تسجيل الدخول." };
+
+  const { data: worker } = await supabase.from("workers").select("name").eq("id", workerId).single();
+  if (!worker) return { success: false, message: "العامل غير موجود." };
+
+  const isStopped = worker.name.includes("(متوقف)");
+  const newName = isStopped
+    ? worker.name.replace(/\s*\(متوقف\)\s*$/, "").trim()
+    : `${worker.name.trim()} (متوقف)`;
+
+  const { error } = await supabase.from("workers").update({ name: newName }).eq("id", workerId);
+  if (error) return { success: false, message: "تعذر تحديث حالة العامل." };
+
+  revalidatePath("/dashboard/workers");
+  revalidatePath("/dashboard/workers/attendance");
+  revalidatePath("/dashboard/workers/payouts");
+  return {
+    success: true,
+    message: isStopped ? "تمت إعادة تفعيل العامل على رأس العمل." : "تم إيقاف العامل عن العمل.",
+  };
+}
+

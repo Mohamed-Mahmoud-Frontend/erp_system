@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "العملاء | نظام إدارة المصنع",
+  title: "إدارة العملاء | نظام إدارة المصنع",
 };
 
 export default async function ClientsPage({
@@ -31,10 +31,16 @@ export default async function ClientsPage({
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">حدث خطأ في جلب بيانات العملاء: {error.message}</div>
+        <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200">
+          حدث خطأ في جلب بيانات العملاء: {error.message}
+        </div>
       </div>
     );
   }
+
+  const clientList = clients || [];
+  const creditClientsCount = clientList.filter((c) => (c.credit_days || 0) > 0).length;
+  const cashClientsCount = clientList.filter((c) => !c.credit_days || c.credit_days === 0).length;
 
   const typeLabels: Record<string, string> = {
     trader: "تاجر",
@@ -45,37 +51,57 @@ export default async function ClientsPage({
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">إدارة العملاء</h1>
-          <p className="text-sm text-slate-500 mt-1">إجمالي العملاء: {count}</p>
+          <h1 className="text-2xl font-black text-slate-900">سجل العملاء والشركاء</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">
+            إدارة بيانات العملاء، فترات الائتمان، ومتابعة كشوف الحسابات وأوامر الشغل
+          </p>
         </div>
         <Link 
           href="/dashboard/clients/new" 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs hover:shadow-md transition-all"
         >
           + إضافة عميل جديد
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        {/* Filters */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row gap-4">
-          <form className="flex-1 flex gap-2">
+      {/* KPI Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+          <p className="text-xs font-bold text-slate-500">إجمالي العملاء المسجلين</p>
+          <p className="text-xl font-black text-slate-900 mt-1 font-mono">{count ?? 0}</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+          <p className="text-xs font-bold text-blue-700">عملاء بالآجل (فترة سماح)</p>
+          <p className="text-xl font-black text-blue-600 mt-1 font-mono">{creditClientsCount}</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+          <p className="text-xs font-bold text-emerald-700">عملاء الدفع النقدي الفوري</p>
+          <p className="text-xl font-black text-emerald-600 mt-1 font-mono">{cashClientsCount}</p>
+        </div>
+      </div>
+
+      {/* Table & Filters Card */}
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden">
+        {/* Search & Filters */}
+        <div className="p-4 border-b border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row gap-3">
+          <form className="flex-1 flex flex-wrap gap-2">
             <input 
               type="text" 
               name="q" 
               defaultValue={q} 
-              placeholder="بحث بالاسم..." 
-              className="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="🔍 بحث بالاسم أو جزء منه..." 
+              className="flex-1 min-w-[200px] border border-slate-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-2xs"
             />
             <select 
               name="type" 
               defaultValue={type || "all"} 
-              className="border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="border border-slate-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-2xs font-medium text-slate-700"
             >
-              <option value="all">كل الأنواع</option>
+              <option value="all">كل التصنيفات</option>
               <option value="trader">تاجر</option>
               <option value="contractor">مقاول</option>
               <option value="company">شركة</option>
@@ -84,16 +110,16 @@ export default async function ClientsPage({
             </select>
             <button 
               type="submit"
-              className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors"
+              className="bg-slate-800 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-slate-700 transition-colors shadow-xs"
             >
-              تصفية
+              بحث وتصفية
             </button>
             {(q || type) && (
               <Link 
                 href="/dashboard/clients" 
-                className="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-300 transition-colors flex items-center"
+                className="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-300 transition-colors flex items-center"
               >
-                مسح
+                مسح التصفية
               </Link>
             )}
           </form>
@@ -102,40 +128,77 @@ export default async function ClientsPage({
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
+            <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-600">
               <tr>
-                <th className="px-6 py-4 font-semibold">الاسم</th>
-                <th className="px-6 py-4 font-semibold">النوع</th>
-                <th className="px-6 py-4 font-semibold">الهاتف</th>
-                <th className="px-6 py-4 font-semibold">فترة الائتمان</th>
-                <th className="px-6 py-4 font-semibold text-center">الإجراءات</th>
+                <th className="px-6 py-4 font-bold">اسم العميل</th>
+                <th className="px-6 py-4 font-bold">التصنيف</th>
+                <th className="px-6 py-4 font-bold">رقم الهاتف</th>
+                <th className="px-6 py-4 font-bold">شروط الدفع والائتمان</th>
+                <th className="px-6 py-4 font-bold text-center">الإجراءات السريعة</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {clients?.length === 0 ? (
+              {clientList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
-                    لا يوجد عملاء مطاقين للبحث
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    لا يوجد عملاء مطابقين لمعايير البحث
                   </td>
                 </tr>
               ) : (
-                clients?.map((client) => (
-                  <tr key={client.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">{client.name}</td>
+                clientList.map((client) => (
+                  <tr key={client.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900">
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-sm border border-blue-200/50">
+                          {client.name.charAt(0)}
+                        </span>
+                        <div>
+                          <strong className="block text-slate-900 font-bold">{client.name}</strong>
+                          <span className="text-[11px] text-slate-400 font-mono" dir="ltr">#{client.id.slice(0, 8)}</span>
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                         {typeLabels[client.type] || client.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-600" dir="ltr">{client.phone || "-"}</td>
-                    <td className="px-6 py-4 text-slate-600">{client.credit_days > 0 ? `${client.credit_days} يوم` : "نقدي"}</td>
+                    <td className="px-6 py-4 text-slate-700 font-mono text-xs" dir="ltr">
+                      {client.phone ? (
+                        <a href={`tel:${client.phone}`} className="hover:text-blue-600">
+                          {client.phone}
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 font-sans">غير مسجل</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {client.credit_days > 0 ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          آجل ({client.credit_days} يوم)
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          نقدي فوري ✓
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-center">
-                      <Link 
-                        href={`/dashboard/clients/${client.id}`}
-                        className="text-blue-600 hover:text-blue-800 font-medium text-sm"
-                      >
-                        عرض التفاصيل
-                      </Link>
+                      <div className="inline-flex items-center gap-2 justify-center">
+                        <Link 
+                          href={`/dashboard/clients/${client.id}`}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-xs"
+                        >
+                          كشف الحساب والطلبات
+                        </Link>
+                        <Link 
+                          href={`/dashboard/clients/${client.id}/edit`}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors border border-slate-200"
+                          title="تعديل بيانات العميل"
+                        >
+                          ✏️ تعديل
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))
