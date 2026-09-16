@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,6 +11,8 @@ export default async function ClientsPage({
 }: {
   searchParams: Promise<{ q?: string; type?: string }>;
 }) {
+  await requirePermission("sales");
+
   const { q, type } = await searchParams;
   const supabase = await createClient();
 

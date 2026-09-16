@@ -20,7 +20,7 @@ export async function createOrderAction(prevState: unknown, formData: FormData) 
   const rawData = {
     client_id: formData.get("client_id") || "",
     client_name: formData.get("client_name") || "",
-    client_type: formData.get("client_type") || "",
+    client_type: formData.get("client_type") || undefined,
     client_phone: formData.get("client_phone") || "",
     items: items,
   };

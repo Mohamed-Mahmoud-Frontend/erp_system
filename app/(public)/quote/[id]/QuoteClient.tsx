@@ -1,21 +1,29 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { quotationTotals, type SharedQuotation } from "@/lib/quotations/items";
+import Decimal from "decimal.js";
 
-export default function QuoteClient({ data }: { data: any }) {
-  const [isReady, setIsReady] = useState(false);
+type PdfWorker = {
+  from(element: HTMLElement): PdfWorker;
+  set(options: object): PdfWorker;
+  save(): Promise<void>;
+};
 
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
+declare global {
+  interface Window {
+    html2pdf?: () => PdfWorker;
+  }
+}
 
-  const generatePdf = () => {
-    if (typeof window === "undefined" || !(window as any).html2pdf) {
+export default function QuoteClient({ data }: { data: SharedQuotation }) {
+  const generatePdf = async () => {
+    if (!window.html2pdf) {
       alert("جاري تحميل مكتبة PDF... يرجى المحاولة بعد ثانية.");
       return;
     }
     const element = document.getElementById("priceOfferContent");
+    if (!element) return;
     const opt = {
       margin: [0.35, 0.35, 0.35, 0.35],
       filename: `عرض_سعر_${data.guest_name || "بولي_تكس"}.pdf`,
@@ -24,22 +32,21 @@ export default function QuoteClient({ data }: { data: any }) {
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       pagebreak: { mode: "css", avoid: ".avoid-break" },
     };
-    (window as any).html2pdf().from(element).set(opt).save();
+    try {
+      await window.html2pdf().from(element).set(opt).save();
+    } catch {
+      alert("فشل تصدير ملف PDF. أعد المحاولة.");
+    }
   };
 
-  const parsedItems = data.parsed_items || [];
-  const items = Array.isArray(parsedItems) ? parsedItems : parsedItems.products || [];
-  const transportationCost = parsedItems.transportation_cost || 0;
-  
-  // Calculate totals
-  const itemsTotal = items.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-  const totalQuantity = items.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0);
-  const grandTotal = itemsTotal + transportationCost;
+  const items = data.parsed_items.products;
+  const { itemsTotal, transportationCost, grandTotal } = quotationTotals(data.parsed_items);
 
   const offerDate = new Date(data.created_at).toLocaleDateString("ar-EG", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Africa/Cairo",
   });
 
   return (
@@ -96,8 +103,6 @@ export default function QuoteClient({ data }: { data: any }) {
         `
       }} />
 
-      {isReady && (
-        <>
           <div id="priceOfferContent" className="sheet font-sans" dir="rtl" style={{ textAlign: 'right' }}>
             <div className="hero-banner avoid-break">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -108,10 +113,6 @@ export default function QuoteClient({ data }: { data: any }) {
                   </div>
                   <h1 className="text-4xl font-extrabold leading-tight">عرض سعر توريد خزانات مياه بولي إيثيلين</h1>
                   <p className="mt-3 text-blue-100 text-lg">مقدم إلى {data.guest_name || "عميل الشركة"}</p>
-                </div>
-                <div className="text-center md:text-left">
-                  {/* Since Poly image is local, we use a placeholder or assume it's in public folder. Adjust path as needed. */}
-                  <img src="/poly.png" alt="شعار شركة بولي تكس" className="w-36 h-auto inline-block bg-white rounded-2xl p-3 shadow-lg" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
             </div>
@@ -182,7 +183,7 @@ export default function QuoteClient({ data }: { data: any }) {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {items.map((item: any, idx: number) => (
+                      {items.map((item, idx) => (
                         <tr key={idx} className="hover:bg-gray-50">
                           <td className="p-4 font-bold">{idx + 1}</td>
                           <td className="p-4">
@@ -194,7 +195,7 @@ export default function QuoteClient({ data }: { data: any }) {
                           <td className="p-4 font-semibold whitespace-nowrap">{item.quantity || 1}</td>
                           <td className="p-4 ltr-text font-bold whitespace-nowrap">{(item.price || 0).toLocaleString()} ج</td>
                           <td className="p-4 ltr-text font-bold text-lg whitespace-nowrap text-blue-800">
-                            {((item.price || 0) * (item.quantity || 1)).toLocaleString()} ج
+                            {new Decimal(item.price).times(item.quantity).toDecimalPlaces(2).toNumber().toLocaleString()} ج
                           </td>
                         </tr>
                       ))}
@@ -287,8 +288,6 @@ export default function QuoteClient({ data }: { data: any }) {
               <span>📄</span> تصدير العرض كـ PDF
             </button>
           </div>
-        </>
-      )}
     </>
   );
 }

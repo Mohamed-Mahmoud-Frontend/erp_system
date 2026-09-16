@@ -1,0 +1,4 @@
+﻿"use client";
+import {useActionState} from 'react';
+import {changePassword} from './actions';
+export default function AccountPage(){const [state,action,pending]=useActionState(changePassword,undefined);return <form action={action} className="account-card max-w-lg mx-auto p-6 space-y-4"><h1 className="text-2xl font-bold">تغيير كلمة المرور</h1>{[['current','كلمة المرور الحالية'],['password','كلمة المرور الجديدة'],['confirmation','تأكيد الجديدة']].map(([name,label])=><label className="block" key={name}>{label}<input type="password" name={name} autoComplete={name==='current'?'current-password':'new-password'} required minLength={name==='current'?1:12} className="block w-full border p-2"/></label>)}{state?.message&&<p role={state.success?'status':'alert'}>{state.message}</p>}<button disabled={pending} className="border bg-blue-700 text-white rounded p-2">تغيير كلمة المرور</button></form>;}

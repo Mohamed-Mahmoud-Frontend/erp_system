@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
@@ -5,13 +6,16 @@ export const metadata = {
 };
 
 export default async function QuotationsPage() {
+  await requirePermission("sales");
+
   const supabase = await createClient();
 
-  const { data: quotations } = await supabase
+  const { data: quotations, error } = await supabase
     .from("quotations")
     .select("*, clients(name, phone)")
     .order("created_at", { ascending: false });
 
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center">
@@ -79,7 +83,7 @@ export default async function QuotationsPage() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <a
-                        href={`/quote/${q.id}`}
+                        href={`/quote/${q.id}?token=${q.share_token}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 font-bold text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"

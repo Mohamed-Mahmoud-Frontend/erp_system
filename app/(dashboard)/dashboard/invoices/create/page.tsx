@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import InvoiceForm, { type OrderWithClient } from "./invoice-form";
@@ -7,13 +8,15 @@ export const metadata = {
 };
 
 export default async function CreateInvoicePage() {
+  await requirePermission("sales");
+
   const supabase = await createClient();
 
   // 1. Fetch all clients
-  const { data: clients } = await supabase.from("clients").select("id, name, phone, type, price_tier").order("name");
+  const { data: clients, error: clientsError } = await supabase.from("clients").select("id, name, phone, type, price_tier").order("name");
 
   // 2. Fetch orders that do not have an invoice yet
-  const { data: invoices } = await supabase.from("invoices").select("order_id");
+  const { data: invoices, error: invoicesError } = await supabase.from("invoices").select("order_id");
   const invoicedOrderIds = new Set(invoices?.map((i) => i.order_id) || []);
 
   const { data: orders, error } = await supabase
@@ -30,10 +33,10 @@ export default async function CreateInvoicePage() {
     `)
     .order("created_at", { ascending: false });
 
-  if (error) {
+  if (clientsError || invoicesError || error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">حدث خطأ في جلب الطلبات: {error.message}</div>
+        <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>
       </div>
     );
   }

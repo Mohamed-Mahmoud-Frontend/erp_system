@@ -1,0 +1,4 @@
+﻿"use client";
+import {useActionState} from 'react';
+import {recordSupplierTransactionAction} from '../actions';
+export default function TransactionForm({id}:{id:string}){const [state,action,pending]=useActionState(recordSupplierTransactionAction,undefined);return <form action={action} className="border rounded bg-white p-4 space-y-3"><input type="hidden" name="supplier_id" value={id}/><label>المعاملة<select name="type" className="border p-2"><option value="invoice">فاتورة مورد — تزيد المستحق</option><option value="payment">سداد للمورد — يقلل المستحق</option></select></label><label className="block">المبلغ بالجنيه<input name="amount" type="number" min="0.01" step="0.01" required className="border p-2"/></label>{state?.message&&<p role={state.success?'status':'alert'}>{state.message}</p>}<button disabled={pending} className="border rounded bg-blue-700 text-white p-2">حفظ المعاملة</button></form>;}

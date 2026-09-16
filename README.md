@@ -1,37 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# مميز | Momayaz ERP
 
-## Getting Started
+digital product & software
 
-First, run the development server:
+نظام عربي لإدارة المصنع: العملاء والمبيعات والتحصيل، التصنيع والخامات، الموردون، الحضور والرواتب، وصلاحيات فريق العمل.
+
+## Local development
+
+Use Node.js 22. Copy `.env.example` to `.env.local`, provide your project settings, then:
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Development and production builds use Webpack explicitly. This avoids the recurring Turbopack PostCSS worker timeout on this Windows workspace; Tailwind and the application CSS remain enabled.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run db:check
+npm run verify:business
+npm run verify:permissions
+npm run build
+npm run typecheck
+npx eslint . --max-warnings=0
+```
 
-## Learn More
+Business tests run against isolated PostgreSQL/PGlite fixtures. They do not verify live Supabase, Google Drive, or AI services.
 
-To learn more about Next.js, take a look at the following resources:
+## Release workflow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Use a feature branch and a focused Conventional Commit (`feat(sales): …`, `fix(payroll): …`, `chore(deploy): …`). Open a pull request to `main`. Quality checks run before production release. Configure hosting and repository secrets once using the [deployment guide](.deploy/README.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Production database migrations run separately from the application build. Previously applied migrations are immutable and are not replayed on ordinary commits. Never reset or reseed production during a release.
 
-## Deploy on Vercel
+## Design and review
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The interface supports Arabic RTL, desktop and mobile navigation, searchable sections, keyboard access, and page loading/error states. The [factory review PDF](deliverables/factory-review.pdf) helps collect feature requests from the factory team.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# erp_system
+Operational evidence, private credentials and backup archives stay outside Git. See [backup and recovery](BACKUP_AND_RECOVERY.md) for the separate backup worker and its limitations.

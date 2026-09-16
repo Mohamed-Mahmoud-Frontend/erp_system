@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,13 +7,16 @@ export const metadata = {
 };
 
 export default async function WorkersPage() {
+  await requirePermission("payroll");
+
   const supabase = await createClient();
 
-  const { data: workers } = await supabase
+  const { data: workers, error } = await supabase
     .from("workers")
     .select("*")
     .order("name", { ascending: true });
 
+  if (error) return <p role="alert" className="text-red-700">تعذر تحميل العمال. أعد المحاولة.</p>;
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -64,10 +68,10 @@ export default async function WorkersPage() {
               ) : (
                 workers?.map((worker) => (
                   <tr key={worker.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">{worker.name}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900"><Link className="underline text-blue-700" href={`/dashboard/workers/${worker.id}`}>{worker.name} — تصحيح / تاريخ الصرف</Link></td>
                     <td className="px-6 py-4 text-slate-600">{worker.daily_wage.toLocaleString()} ج.م</td>
                     <td className="px-6 py-4 text-center">
-                      <span className="text-sm text-slate-400">تحت التطوير</span>
+                      <Link href="/dashboard/workers/transactions" className="text-blue-700 underline">تسجيل سلفة / خصم / مكافأة</Link>
                     </td>
                   </tr>
                 ))

@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local credentials, backup archives, and portable database tools
+.private/
+.backups/
+.tools/
+# Generated reviews and operational evidence remain local.
+/audit/
+/deliverables/*.html
+/deliverables/*preview.png
+/supabase/.temp/
+/supabase/.branches/
+!.env.example

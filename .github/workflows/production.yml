@@ -1,0 +1,54 @@
+﻿name: Production release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: momayaz-production
+  cancel-in-progress: false
+jobs:
+  quality:
+    uses: ./.github/workflows/ci.yml
+  release:
+    needs: quality
+    if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      NEXT_DEPLOYMENT_ID: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Require deployment credentials
+        shell: bash
+        run: |
+          for name in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID; do
+            if [ -z "${!name}" ]; then echo "Missing secret: $name"; exit 1; fi
+          done
+      - run: npm ci
+      - name: Load production hosting configuration
+        run: npx --yes vercel@59.14.0 pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Validate production environment
+        run: node --env-file=.vercel/.env.production.local scripts/deploy/check-env.mjs
+      - name: Build the release before changing the database
+        run: npx --yes vercel@59.14.0 build --prod --token="$VERCEL_TOKEN"
+      - name: Link the intended database
+        run: npx supabase link --project-ref "$SUPABASE_PROJECT_ID"
+      - name: Preview pending migrations
+        run: npm run db:plan
+      - name: Apply only migrations not already recorded
+        run: npx supabase db push --linked --yes
+      - name: Publish the prebuilt application
+        run: npx --yes vercel@59.14.0 deploy --prebuilt --prod --token="$VERCEL_TOKEN"

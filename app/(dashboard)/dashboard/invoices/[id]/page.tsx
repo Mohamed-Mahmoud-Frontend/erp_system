@@ -1,181 +1,52 @@
+import { allowed, getAccess, requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Decimal from "decimal.js";
 import { createClient } from "@/lib/supabase/server";
+import { balanceLabel, isOverdue, money } from "@/lib/billing";
 import PaymentForm from "./payment-form";
+import CorrectionForm from "../../corrections/form";
+import ReturnForm from "./return-form";
+export const metadata = { title: "تفاصيل الفاتورة" };
+export default async function InvoiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  await requirePermission("sales");
 
-export async function generateMetadata() {
-  return {
-    title: `تفاصيل الفاتورة | نظام إدارة المصنع`,
-  };
-}
-
-export default async function InvoiceDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  const access=await getAccess();
   const { id } = await params;
   const supabase = await createClient();
-
-  // Fetch invoice with related data
-  const { data: invoice, error } = await supabase
-    .from("invoices")
-    .select(`
-      *,
-      orders (
-        quantity,
-        created_at,
-        clients (
-          name,
-          type,
-          phone,
-          address
-        )
-      ),
-      payments (
-        id,
-        amount,
-        method,
-        paid_at,
-        created_at,
-        cheques (
-          status,
-          due_date
-        )
-      )
-    `)
-    .eq("id", id)
-    .single();
-
-  if (error || !invoice) {
-    notFound();
-  }
-
-  const isPaid = invoice.balance_due === 0;
-  const isOverdue = !isPaid && invoice.due_date && new Date(invoice.due_date) < new Date();
-  const paidAmount = invoice.total - invoice.balance_due;
-
-  return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">تفاصيل الفاتورة: <span dir="ltr">{invoice.invoice_number}</span></h1>
-          <p className="text-slate-500 mt-1">عرض حالة الفاتورة وتسجيل المدفوعات</p>
-        </div>
-        <Link
-          href="/dashboard/invoices"
-          className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
-        >
-          العودة للفواتير
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Right side: Invoice Details */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h2 className="font-bold text-slate-800">بيانات الفاتورة</h2>
-              {isPaid ? (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800">
-                  مدفوعة بالكامل
-                </span>
-              ) : isOverdue ? (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-800">
-                  متأخرة السداد
-                </span>
-              ) : (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
-                  مستحقة السداد
-                </span>
-              )}
-            </div>
-            
-            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <span className="block text-sm text-slate-500 mb-1">العميل</span>
-                <span className="font-bold text-slate-900">{invoice.orders?.clients?.name || "غير محدد"}</span>
-                {invoice.orders?.clients?.type && (
-                  <span className="block text-xs text-slate-500 mt-1">{invoice.orders.clients.type}</span>
-                )}
-              </div>
-              <div>
-                <span className="block text-sm text-slate-500 mb-1">تاريخ الإصدار</span>
-                <span className="font-medium text-slate-900">{new Date(invoice.created_at).toLocaleDateString("ar-EG")}</span>
-              </div>
-              <div>
-                <span className="block text-sm text-slate-500 mb-1">تاريخ الاستحقاق</span>
-                <span className="font-medium text-slate-900">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString("ar-EG") : "-"}</span>
-              </div>
-              <div>
-                <span className="block text-sm text-slate-500 mb-1">الكمية المباعة</span>
-                <span className="font-medium text-slate-900">{invoice.orders?.quantity} خزان</span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 p-6 border-t border-slate-100">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-600 font-medium">الإجمالي:</span>
-                <span className="text-xl font-bold text-slate-900">{invoice.total.toLocaleString()} ج.م</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-600 font-medium">تم سداده:</span>
-                <span className="text-lg font-bold text-green-600">{paidAmount.toLocaleString()} ج.م</span>
-              </div>
-              <div className="flex justify-between items-center pt-4 border-t border-slate-200 mt-4">
-                <span className="text-slate-800 font-bold">المتبقي للدفع:</span>
-                <span className="text-2xl font-black text-red-600">{invoice.balance_due.toLocaleString()} ج.م</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
-              <h2 className="font-bold text-slate-800">سجل المدفوعات</h2>
-            </div>
-            
-            {(!invoice.payments || invoice.payments.length === 0) ? (
-              <div className="p-8 text-center text-slate-500">
-                لم يتم تسجيل أي مدفوعات لهذه الفاتورة بعد.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {invoice.payments.map((payment: { id: string, amount: number, method: string, paid_at: string, cheques: { status: string, due_date: string }[] }) => (
-                  <div key={payment.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                    <div>
-                      <div className="font-bold text-slate-900 mb-1">{payment.amount.toLocaleString()} ج.م</div>
-                      <div className="text-sm text-slate-500">
-                        {payment.method === "cash" ? "نقدي" : payment.method === "transfer" ? "تحويل بنكي" : "شيك"} 
-                        {" • "} 
-                        {new Date(payment.paid_at).toLocaleDateString("ar-EG")}
-                      </div>
-                    </div>
-                    {payment.method === "cheque" && payment.cheques?.[0] && (
-                      <div className="text-left text-sm">
-                        <div className="text-slate-600 mb-1">تاريخ الشيك: <span className="font-medium text-slate-900">{new Date(payment.cheques[0].due_date).toLocaleDateString("ar-EG")}</span></div>
-                        <div>
-                          {payment.cheques[0].status === "pending" ? (
-                            <span className="text-orange-600 bg-orange-50 px-2 py-0.5 rounded">قيد الانتظار</span>
-                          ) : payment.cheques[0].status === "cleared" ? (
-                            <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded">تم التحصيل</span>
-                          ) : (
-                            <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded">مرفوض</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Left side: Payment Form */}
-        <div>
-          <PaymentForm invoiceId={invoice.id} balanceDue={invoice.balance_due} />
-        </div>
-      </div>
-    </div>
-  );
+  const { data: invoice, error } = await supabase.from("invoice_balances").select("*").eq("id", id).maybeSingle();
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل الفاتورة. أعد المحاولة.</p>;
+  if (!invoice) notFound();
+  const { data: history, error: historyError } = await supabase.from("invoices").select("payments(*,cheques(*)),sales_returns(*)").eq("id", id).single();
+  const overdue = isOverdue(invoice.due_date, invoice.balance_due);
+  const status = invoice.balance_due < 0 ? "رصيد دائن للعميل" : invoice.balance_due === 0 ? "مسددة / مسواة" : overdue ? "متأخرة السداد" : "مستحقة السداد";
+  return <div className="max-w-6xl mx-auto space-y-6">
+    <div className="flex flex-wrap justify-between gap-4"><h1 className="text-2xl font-bold">تفاصيل الفاتورة: <span dir="ltr">{invoice.invoice_number}</span></h1><Link className="text-blue-700 underline" href="/dashboard/invoices">العودة للفواتير</Link></div>
+    <div className="grid lg:grid-cols-3 gap-6"><div className="lg:col-span-2 space-y-6">
+      <section className="bg-white border rounded-xl p-6 space-y-4">
+        <p className={`font-bold ${overdue ? "text-red-700" : "text-blue-700"}`}>{status}</p>
+        <dl className="grid sm:grid-cols-2 gap-4">
+          <div><dt>العميل</dt><dd><Link className="text-blue-700 underline" href={`/dashboard/clients/${invoice.client_id}`}>{invoice.client_name}</Link></dd></div>
+          <div><dt>الكمية</dt><dd>{invoice.quantity} خزان</dd></div>
+          <div><dt>تاريخ الإصدار</dt><dd>{new Date(invoice.created_at).toLocaleDateString("ar-EG", { timeZone: "Africa/Cairo" })}</dd></div>
+          <div><dt>تاريخ الاستحقاق</dt><dd>{invoice.due_date ?? "—"}</dd></div>
+        </dl>
+        <div className="border-t pt-4 space-y-2"><p>الإجمالي: {money(invoice.total)} ج.م</p><p>المدفوع المحتسب: {money(invoice.paid_amount)} ج.م</p><p>مرتجعات البيع: {money(invoice.returned_amount)} ج.م</p>
+          <p data-testid="invoice-balance" className="text-2xl font-bold">الرصيد: {balanceLabel(invoice.balance_due)}</p></div>
+      </section>
+      {historyError ? <p role="alert" className="p-6 text-red-700">تعذر تحميل المدفوعات والمرتجعات. أعد المحاولة.</p> : <>
+        <section className="bg-white border rounded-xl p-6 space-y-4"><h2 className="font-bold text-lg">سجل المدفوعات</h2>
+          {history.payments.length === 0 && <p>لم يتم تسجيل أي مدفوعات بعد.</p>}
+          {[...history.payments].sort((a, b) => a.paid_at.localeCompare(b.paid_at) || a.created_at.localeCompare(b.created_at)).map(payment => <div key={payment.id} className="border-t pt-3">
+            <p>{money(payment.amount)} ج.م — {payment.method === "cash" ? "نقدي" : payment.method === "transfer" ? "تحويل بنكي" : "شيك"} — {payment.paid_at}</p>
+            {payment.method === "cheque" && payment.cheques.map(cheque => <p key={cheque.id} className={cheque.status === "bounced" ? "text-red-700" : "text-slate-600"}>استحقاق {cheque.due_date} — {cheque.status === "bounced" ? "مرفوض — غير محتسب في السداد" : cheque.status === "cleared" ? "تم التحصيل" : "قيد الانتظار"} <Link className="underline text-blue-700" href="/dashboard/cheques">إدارة الشيك</Link></p>)}
+          </div>)}
+        </section>
+        <section className="bg-white border rounded-xl p-6 space-y-4"><h2 className="font-bold text-lg">مرتجعات البيع</h2>
+          {history.sales_returns.length === 0 && <p>لا توجد مرتجعات مسجلة.</p>}
+          {[...history.sales_returns].sort((a, b) => a.created_at.localeCompare(b.created_at)).map(item => <div key={item.id} className="border-t pt-3"><p>{money(item.amount)} ج.م — {new Date(item.created_at).toLocaleDateString("ar-EG")} — {item.condition}</p>{item.note && <p className="text-slate-600">{item.note}</p>}{item.voided_at ? <p className="text-red-700">ملغى — غير محتسب: {item.voided_reason} — {new Date(item.voided_at).toLocaleString("ar-EG",{timeZone:"Africa/Cairo"})}</p> : allowed(access,"admin") ? <CorrectionForm kind="return" id={item.id}/> : <p>إلغاء المرتجع متاح للمدير.</p>}</div>)}
+        </section>
+      </>}
+    </div><div className="space-y-6"><PaymentForm invoiceId={id} balanceDue={invoice.balance_due} /><ReturnForm invoiceId={id} maxAmount={new Decimal(invoice.total).minus(invoice.returned_amount).toNumber()} /></div></div>
+  </div>;
 }

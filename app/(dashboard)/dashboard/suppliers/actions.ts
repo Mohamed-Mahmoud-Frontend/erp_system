@@ -3,14 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { supplierSchema } from "@/lib/validations/material";
+import { supplierSchema, supplierTransactionSchema } from "@/lib/validations/material";
 
 export async function createSupplierAction(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
   const rawData = {
     name: formData.get("name"),
-    balance: Number(formData.get("balance")) || 0,
+    balance: Number(formData.get("balance") || 0),
   };
 
   const parsed = supplierSchema.safeParse(rawData);
@@ -24,7 +24,7 @@ export async function createSupplierAction(prevState: unknown, formData: FormDat
 
   const { error } = await supabase.from("suppliers").insert({
     name: parsed.data.name,
-    balance: parsed.data.balance,
+    opening_balance: parsed.data.balance,
   });
 
   if (error) {
@@ -38,21 +38,18 @@ export async function createSupplierAction(prevState: unknown, formData: FormDat
 export async function recordSupplierTransactionAction(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
-  const supplier_id = formData.get("supplier_id") as string;
-  const type = formData.get("type") as "invoice" | "payment";
-  const amount = Number(formData.get("amount"));
-
-  if (!supplier_id || !type || amount <= 0) {
-    return { message: "تأكد من إدخال مبلغ صحيح واختيار المورد" };
-  }
+  const {data:{user},error:authError}=await supabase.auth.getUser();
+  if(authError || !user) return {message:'يجب تسجيل الدخول.'};
+  const parsed=supplierTransactionSchema.safeParse(Object.fromEntries(formData));
+  if(!parsed.success) return {message:'اختر المورد ونوع المعاملة وأدخل مبلغًا موجبًا صالحًا.'};
+  const {supplier_id,type,amount}=parsed.data;
 
   // Record transaction atomically
   const { error: rpcError } = await supabase.rpc("record_supplier_transaction", {
     p_supplier_id: supplier_id,
     p_type: type,
     p_amount: amount,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any);
+  });
 
   if (rpcError) {
     console.error("Supplier transaction error:", rpcError);
@@ -60,5 +57,6 @@ export async function recordSupplierTransactionAction(prevState: unknown, formDa
   }
 
   revalidatePath("/dashboard/suppliers");
+  revalidatePath(`/dashboard/suppliers/${supplier_id}`);
   return { success: true, message: "تم تسجيل المعاملة بنجاح" };
 }

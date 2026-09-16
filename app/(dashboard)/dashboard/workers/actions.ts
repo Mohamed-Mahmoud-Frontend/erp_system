@@ -37,12 +37,15 @@ export async function createWorkerAction(prevState: unknown, formData: FormData)
 
 export async function recordAttendanceAction(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { message: "يجب تسجيل الدخول." };
 
   const rawData = {
     worker_id: formData.get("worker_id"),
     work_date: formData.get("work_date"),
     status: formData.get("status"),
-    extra_units: Number(formData.get("extra_units")) || 0,
+    extra_units: Number(formData.get("extra_units") || 0),
+    extra_type: formData.get("extra_type") || "amount",
   };
 
   const parsed = attendanceSchema.safeParse(rawData);
@@ -59,6 +62,7 @@ export async function recordAttendanceAction(prevState: unknown, formData: FormD
     work_date: parsed.data.work_date,
     status: parsed.data.status,
     extra_units: parsed.data.extra_units,
+    extra_type: parsed.data.extra_type,
   });
 
   if (error) {
@@ -70,12 +74,15 @@ export async function recordAttendanceAction(prevState: unknown, formData: FormD
   }
 
   revalidatePath("/dashboard/workers/attendance");
+  revalidatePath("/dashboard/workers/payouts");
   revalidatePath("/dashboard/workers");
   return { success: true, message: "تم تسجيل الحضور بنجاح" };
 }
 
 export async function recordWorkerTransactionAction(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { message: "يجب تسجيل الدخول." };
 
   const rawData = {
     worker_id: formData.get("worker_id"),

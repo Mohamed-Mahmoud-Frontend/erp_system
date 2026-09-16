@@ -1,3 +1,5 @@
+import { requirePermission } from "@/lib/access";
+import ClientStatement from "./statement";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +9,8 @@ export default async function ClientDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requirePermission("sales");
+
   const { id } = await params;
   const supabase = await createClient();
 
@@ -14,14 +18,15 @@ export default async function ClientDetailPage({
     .from("clients")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error || !client) {
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل بيانات العميل. أعد المحاولة.</p>;
+  if (!client) {
     notFound();
   }
 
   // Fetch recent orders
-  const { data: orders } = await supabase
+  const { data: orders, error: ordersError } = await supabase
     .from("orders")
     .select("*")
     .eq("client_id", id)
@@ -83,10 +88,7 @@ export default async function ClientDetailPage({
 
         {/* Balance & Quick Stats */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 col-span-1 md:col-span-2 space-y-4">
-           <h2 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">الرصيد والحساب</h2>
-           <div className="flex items-center justify-center h-32 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-              <p className="text-slate-500">سيتم إضافة تفاصيل الرصيد والفواتير في المرحلة الثالثة</p>
-           </div>
+           <ClientStatement clientId={id} />
         </div>
       </div>
 
@@ -96,6 +98,7 @@ export default async function ClientDetailPage({
           <h2 className="text-lg font-semibold text-slate-900">أحدث الطلبات</h2>
         </div>
         <div className="overflow-x-auto">
+          {ordersError ? <p role="alert" className="p-6 text-red-700">تعذر تحميل أحدث الطلبات. أعد المحاولة.</p> : <>
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
               <tr>
@@ -133,7 +136,7 @@ export default async function ClientDetailPage({
                 ))
               )}
             </tbody>
-          </table>
+          </table></>}
         </div>
       </div>
     </div>

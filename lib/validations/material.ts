@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const materialSchema = z.object({
   type: z.string().min(2, "نوع المادة يجب أن يكون أكثر من حرفين"),
-  unit: z.enum(["kg", "ton"], { errorMap: () => ({ message: "يجب اختيار وحدة قياس صحيحة (كجم أو طن)" }) }),
+  unit: z.enum(["kg", "ton"], { error: "يجب اختيار وحدة قياس صحيحة (كجم أو طن)" }),
   min_threshold: z.number().min(0, "الحد الأدنى لا يمكن أن يكون سالباً"),
 });
 
@@ -21,7 +21,11 @@ export type MovementFormValues = z.infer<typeof movementSchema>;
 
 export const supplierSchema = z.object({
   name: z.string().min(2, "اسم المورد مطلوب"),
-  balance: z.number().default(0),
+  balance: z.number().finite().default(0),
 });
 
 export type SupplierFormValues = z.infer<typeof supplierSchema>;
+
+export const supplierTransactionSchema = z.object({
+ supplier_id: z.uuid(), type:z.enum(['invoice','payment']), amount:z.coerce.number().finite().positive(),
+});

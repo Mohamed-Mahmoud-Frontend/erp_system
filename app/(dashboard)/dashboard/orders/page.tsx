@@ -1,18 +1,24 @@
+import { requirePermission } from "@/lib/access";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { statusLabels } from "@/lib/manufacturing";
+import { orderItemSchema } from "@/lib/validations/order";
 
 export const metadata = {
   title: "الطلبات (أوامر الشغل) | نظام إدارة المصنع",
 };
 
 export default async function OrdersPage() {
+  await requirePermission(["sales","production"]);
+
   const supabase = await createClient();
 
-  const { data: orders } = await supabase
+  const { data: orders, error } = await supabase
     .from("orders")
     .select("*, clients(name, type, phone)")
     .order("created_at", { ascending: false });
 
+  if (error) return <p role="alert" className="text-red-700">تعذر تحميل الطلبات. أعد المحاولة.</p>;
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center">
@@ -54,7 +60,7 @@ export default async function OrdersPage() {
                 orders?.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 text-sm font-medium text-slate-900" dir="ltr">
-                      ...{order.id.split("-")[0]}
+                      <Link className="text-blue-700 underline" href={`/dashboard/orders/${order.id}`}>...{order.id.split("-")[0]} — متابعة التصنيع</Link>
                     </td>
                     <td className="px-6 py-4 text-slate-600 text-sm">
                       {new Date(order.created_at).toLocaleDateString("ar-EG")}
@@ -67,11 +73,14 @@ export default async function OrdersPage() {
                       <div className="font-bold text-slate-800 text-lg">{order.quantity}</div>
                       {Array.isArray(order.product_spec) && order.product_spec.length > 0 && (
                         <div className="mt-2 text-xs text-slate-500 text-right space-y-1">
-                          {order.product_spec.map((item: any, i: number) => (
-                            <div key={i} className="bg-slate-50 p-1 rounded border border-slate-100">
-                              {item.quantity} × {item.capacity}
-                            </div>
-                          ))}
+                          {order.product_spec.map((item, i) => {
+                            const parsed = orderItemSchema.safeParse(item);
+                            return (
+                              <div key={i} className="bg-slate-50 p-1 rounded border border-slate-100">
+                                {parsed.success ? `${parsed.data.quantity} × ${parsed.data.capacity}` : "بيانات بند غير صالحة"}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </td>
@@ -79,13 +88,10 @@ export default async function OrdersPage() {
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         order.status === 'pending' ? 'bg-orange-100 text-orange-700' :
                         order.status === 'in_production' ? 'bg-blue-100 text-blue-700' :
-                        order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        (order.status === 'completed' || order.status === 'delivered') ? 'bg-green-100 text-green-700' :
                         'bg-red-100 text-red-700'
                       }`}>
-                        {order.status === 'pending' ? 'قيد الانتظار' :
-                         order.status === 'in_production' ? 'جاري التصنيع' :
-                         order.status === 'completed' ? 'مكتمل' :
-                         'ملغي'}
+                        {statusLabels[order.status] ?? order.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">

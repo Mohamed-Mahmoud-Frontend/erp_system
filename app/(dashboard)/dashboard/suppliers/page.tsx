@@ -1,3 +1,6 @@
+import { requirePermission } from "@/lib/access";
+import Decimal from "decimal.js";
+import {money} from "@/lib/billing";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,21 +9,24 @@ export const metadata = {
 };
 
 export default async function SuppliersPage() {
+  await requirePermission("suppliers");
+
   const supabase = await createClient();
 
-  const { data: suppliers } = await supabase
-    .from("suppliers")
+  const { data: suppliers, error } = await supabase
+    .from("supplier_balances")
     .select("*")
     .order("name", { ascending: true });
 
-  const totalOwed = suppliers?.reduce((sum, s) => sum + Number(s.balance), 0) || 0;
+  const totalOwed = suppliers?.reduce((sum, s) => sum.plus(s.balance), new Decimal(0)) ?? new Decimal(0);
 
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">حسابات الموردين</h1>
-          <p className="text-slate-500 mt-1">إجمالي المستحقات للموردين: {totalOwed.toLocaleString()} ج.م</p>
+          <p className="text-slate-500 mt-1">إجمالي المستحقات للموردين: {money(totalOwed)} ج.م</p>
         </div>
         <Link
           href="/dashboard/suppliers/new"
@@ -52,11 +58,10 @@ export default async function SuppliersPage() {
                   <tr key={supplier.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-medium text-slate-900">{supplier.name}</td>
                     <td className="px-6 py-4 font-bold text-red-600">
-                      {supplier.balance.toLocaleString()} ج.م
+                      {money(supplier.balance)} ج.م
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {/* Would link to supplier details or payment modal */}
-                      <span className="text-sm text-slate-400">تحت التطوير</span>
+                      <Link className="underline text-blue-700" href={`/dashboard/suppliers/${supplier.id}`}>كشف الحساب / تسجيل معاملة</Link>
                     </td>
                   </tr>
                 ))

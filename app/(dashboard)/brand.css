@@ -1,0 +1,185 @@
+/* Momayaz workspace identity. The public website keeps its existing theme. */
+.erp-shell, .momayaz-login {
+  --brand-navy: #03132b;
+  --brand-navy-soft: #0f254a;
+  --brand-blue: #0084ff;
+  --brand-cyan: #00e0ff;
+  --brand-ice: #d4f7ff;
+  --ink: #112846;
+  --muted: #60738c;
+  --line: #dce7f1;
+  --color-primary-500: #0084ff;
+  --color-primary-600: #0065ce;
+  --color-primary-700: #0054ac;
+}
+.momayaz-logo { display: block; width: 216px; max-width: 100%; height: auto; object-fit: contain; flex-shrink: 0; }
+.erp-shell { background: #f3f7fb; }
+.erp-shell .erp-sidebar {
+  width: 272px; padding: 23px 18px 18px; background: linear-gradient(165deg,#0f254a 0%,#03132b 55%,#061c39 100%);
+  border-inline-end: 1px solid #153959; box-shadow: -8px 0 32px #03132b08;
+}
+.erp-shell .erp-brand { flex-direction: column; gap: 4px; padding: 0 0 22px; border-color: #95cdf21c; }
+.erp-shell .erp-brand .momayaz-logo { width: 228px; }
+.erp-shell .brand-caption { font-size: 10px; color: #a9c9e3; letter-spacing: .08em; }
+.erp-shell .nav-search { margin-top: 22px; padding: 11px 12px; background: #ffffff07; border-color: #9bc5e52b; border-radius: 12px; }
+.erp-shell .nav-search input { font-size: 12px; }
+.erp-shell .nav-search:focus-within { border-color: var(--brand-cyan); box-shadow: 0 0 0 3px #00e0ff12; }
+.erp-shell .nav-caption { color: #84a5c5; font-size: 10px; letter-spacing: .04em; margin-bottom: 8px; }
+.erp-shell .nav-group { margin-top: 23px; }
+.erp-shell .nav-item { min-height: 46px; margin-block: 4px; border: 1px solid transparent; border-radius: 11px; color: #c4d5e9; font-weight: 550; }
+.erp-shell .nav-item:hover { background: #0084ff13; border-color: #1b76ab66; color: white; }
+.erp-shell .nav-item[aria-current=page] { background: linear-gradient(100deg,#0084ff25,#0084ff3b); border-color: #0084ff55; color: #fff; box-shadow: inset -3px 0 #00e0ff; }
+.erp-shell .nav-item[aria-current=page] svg { color: #3ee6ff; opacity: 1; }
+.erp-shell .nav-dot { background: #00e0ff; box-shadow: 0 0 10px #00e0ff88; }
+.erp-shell .sidebar-note { margin-top: 16px; border-color: #95cdf21c; font-size: 12px; color: #d5e6f5; }
+.erp-shell .sidebar-note small { color: #88a9c6; font-size: 10px; }
+.erp-shell .status-dot { background: #00d6ed; }
+.erp-shell .erp-workspace { margin-inline-start: 272px; }
+.erp-shell .erp-topbar { height: 80px; background: #ffffffed; border-bottom-color: var(--line); padding-inline: 36px; }
+.erp-shell .topbar-breadcrumb { font-size: 12px; }
+.erp-shell .topbar-breadcrumb strong { color: #183450; }
+.erp-shell .account-avatar { width: 36px; height: 36px; background: #e8f6ff; border-color: #d0eafb; color: #0065ce; border-radius: 12px; }
+.erp-shell .topbar-account button { border: 1px solid var(--line); color: #4c627a; min-height: 36px; padding-inline: 13px; }
+.erp-shell .topbar-brand { display: none; }
+.erp-shell .erp-content { padding: 32px 36px 42px; min-height: calc(100vh - 160px); }
+.erp-shell .erp-footer { min-height: 80px; padding: 14px 36px; align-items: center; background: #fff; border-color: var(--line); color: #647b91; font-size: 11px; }
+.erp-shell .footer-brand { display: flex; align-items: center; gap: 12px; }
+.erp-shell .footer-brand .momayaz-logo { width: 100px; }
+.erp-shell .brand-motto { font-size: 9px; letter-spacing: .13em; color: #52728e; }
+.erp-shell .page-heading h1, .erp-shell .erp-content h1 { color: var(--ink); letter-spacing: -.6px; font-weight: 800; }
+.erp-shell .eyebrow { color: #006fbb; font-size: 11px; }
+.erp-shell .date-chip { border-radius: 20px; background: #fff; border-color: var(--line); padding: 8px 16px; }
+.erp-shell .dashboard-home { gap: 28px; }
+.erp-shell .welcome-panel {
+  background: radial-gradient(ellipse at 5% 90%,#064d8e70,transparent 55%),linear-gradient(115deg,#0f254a,#03132b 75%);
+  min-height: 250px; border: 1px solid #15365c; border-radius: 22px; padding: 32px 38px; isolation: isolate;
+}
+.erp-shell .welcome-panel::before, .momayaz-login .login-story::before {
+  content: ""; position: absolute; width: 400px; height: 600px; border: 22px solid #0084ff30;
+  border-radius: 48% 52% 40% 60%; transform: rotate(32deg); inset-inline-end: 5%; top: -220px;
+  box-shadow: inset 5px 0 18px #00e0ff25,7px 0 25px #0084ff20; pointer-events: none; z-index: -1;
+}
+.erp-shell .welcome-panel::after {
+  content: ""; position: absolute; width: 260px; height: 360px; border: 2px solid #00e0ff35; border-radius: 50%;
+  transform: rotate(35deg); inset-inline-end: 15%; top: -160px; pointer-events: none; z-index: -1;
+}
+.erp-shell .welcome-tag { color: #b3d9f1; font-size: 11px; }
+.erp-shell .welcome-panel h2 { font-size: 30px; line-height: 1.6; letter-spacing: -.5px; margin-block: 14px; }
+.erp-shell .welcome-panel p { color: #b6cfe5; line-height: 2; max-width: 500px; }
+.erp-shell .welcome-link { margin-top: 23px; padding: 8px 16px; border: 1px solid #00e0ff42; border-radius: 9px; color: #9ef5ff; background: #0084ff16; }
+.erp-shell .welcome-link:hover { background: #0084ff30; }
+.erp-shell .factory-emblem { width: 300px; height: auto; min-height: 155px; border: 0; border-radius: 0; background: transparent; transform: none; gap: 15px; }
+.erp-shell .factory-emblem .momayaz-logo { width: 310px; filter: drop-shadow(0 12px 30px #0084ff33); }
+.erp-shell .factory-emblem small { font-size: 8px; color: #a8d5ed; letter-spacing: .18em; text-align: center; }
+.erp-shell .metric-card { border-color: var(--line); border-radius: 16px; padding: 23px 24px; box-shadow: 0 5px 20px #0f254a04; overflow: hidden; }
+.erp-shell .metric-card::after { content: ""; position: absolute; height: 3px; bottom: 0; inset-inline: 24px; background: linear-gradient(90deg,#0084ff,#00d5ed); border-radius: 3px 3px 0 0; opacity: .65; }
+.erp-shell .metric-card:has(.amber)::after { background: #f5bb59; }
+.erp-shell .metric-card>strong { font-size: 35px; color: #112e4e; letter-spacing: -.7px; }
+.erp-shell .metric-icon { background: #e8f5ff; color: #0072d8; border: 1px solid #d9edfb; }
+.erp-shell .metric-icon.amber { background: #fff7e8; color: #9a6516; border-color: #fae9c9; }
+.erp-shell .surface-card, .erp-shell .shortcut-card { border-color: var(--line); border-radius: 16px; box-shadow: 0 4px 18px #0f254a03; }
+.erp-shell .shortcut-card { padding: 21px; }
+.erp-shell .shortcut-card:hover { border-color: #90c9f0; box-shadow: 0 7px 22px #0084ff0c; }
+.erp-shell .shortcut-icon { background: #edf8ff; border: 1px solid #dceffc; color: #0073c6; width: 44px; height: 44px; border-radius: 13px; }
+.erp-shell .section-link { color: #0065b8; }
+.erp-shell .soft-badge { color: #22648a; background: #edf7ff; border-radius: 7px; }
+.erp-shell .erp-content :is(.bg-white.border, form.border, .account-card) { border-color: var(--line); border-radius: 16px; box-shadow: 0 4px 20px #0f254a04; }
+.erp-shell .erp-content :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea) {
+  border-color: #ceddea; border-radius: 10px; color: #173550; min-height: 44px; box-shadow: 0 1px 2px #0f254a03; background-color: #fff;
+}
+.erp-shell .erp-content :is(input,select,textarea):focus-visible { outline: 3px solid #0084ff20; outline-offset: 1px; border-color: #0084ff; }
+.erp-shell .erp-content :is(input,textarea)::placeholder { color: #8092a5; }
+.erp-shell .erp-content label { color: #344e68; }
+.erp-shell .erp-content :is(button,a):is(.bg-blue-600,.bg-blue-700,.bg-brand-600) {
+  background: linear-gradient(115deg,#007be8,#0063c4); color: #fff; border: 1px solid #0061c3; border-radius: 10px; box-shadow: 0 3px 8px #0078d91a; min-height: 42px;
+}
+.erp-shell .erp-content :is(button,a):is(.bg-blue-600,.bg-blue-700,.bg-brand-600):hover { background: #005ebc; }
+.erp-shell .erp-content :is(.text-blue-600,.text-blue-700) { color: #0066b5; }
+.erp-shell .erp-content table { background: #fff; }
+.erp-shell .erp-content th { background: #f0f6fb; color: #49647e; font-size: 12px; font-weight: 700; border-color: #dce7f1; padding-block: 16px; }
+.erp-shell .erp-content td { border-color: #e9eff5; padding-block: 17px; vertical-align: middle; }
+.erp-shell .erp-content tbody tr:hover { background: #f5faff; }
+.erp-shell .erp-content :is(th,td) a { text-underline-offset: 4px; }
+.erp-shell .workspace-state { border-color: var(--line); box-shadow: 0 10px 35px #0f254a06; }
+.erp-shell .state-logo { width: 168px; margin: 0 auto 22px; }
+.erp-shell .mobile-navigation { background: linear-gradient(160deg,#0f254a,#03132b); }
+.erp-shell .mobile-nav-heading { margin-bottom: 18px; }
+.erp-shell .mobile-nav-heading .momayaz-logo { width: 160px; }
+.erp-shell .mobile-nav-heading button { color: #bfe6fa; }
+.erp-shell .workspace-print-brand { display: none; }
+.erp-shell .document-logo { width: 195px; margin-bottom: 14px; }
+.erp-shell .document-identity { display: flex; flex-direction: column; align-items: flex-start; }
+.momayaz-login { min-height: 100dvh; grid-template-columns: 1.05fr 1fr; }
+body:has(.momayaz-login)>header, body:has(.momayaz-login)>footer { display: none; }
+body:has(.momayaz-login)>main { padding: 0; max-width: none; width: 100%; }
+.momayaz-login .login-story { position: relative; overflow: hidden; isolation: isolate; min-height: 100dvh; background: radial-gradient(ellipse at 0 100%,#00579c65,transparent 65%),#03132b; padding: 44px clamp(32px,5vw,80px); gap: 45px; }
+.momayaz-login .login-story::before { inset-inline-end: -100px; top: 25%; width: 380px; height: 580px; }
+.momayaz-login .login-brand { display: block; }
+.momayaz-login .login-brand .momayaz-logo { width: 280px; margin-inline-start: -32px; }
+.momayaz-login .login-story .eyebrow { color: #49dff8; }
+.momayaz-login .login-story h1 { font-size: clamp(32px,3.2vw,48px); }
+.momayaz-login .login-story-footer { border-top: 1px solid #b0ddff22; padding-top: 24px; color: #94bad6; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.momayaz-login .login-form-panel { background: #f7fafd; padding: 40px; }
+.momayaz-login .login-form-inner { max-width: 410px; padding: 34px; background: white; border: 1px solid #dce7f1; border-radius: 22px; box-shadow: 0 15px 50px #0f254a06; }
+.momayaz-login .login-form-logo { width: 180px; margin: 0 auto 28px; }
+.momayaz-login .login-form-inner h2 { color: #102b4c; font-size: 25px; }
+.momayaz-login .login-form-inner input { border-radius: 10px; border-color: #ceddea; min-height: 48px; background: #fafcfe; }
+.momayaz-login .login-form-inner input:focus-visible { outline: 3px solid #0084ff22; border-color: #0084ff; }
+.momayaz-login .login-form-inner button { background: linear-gradient(110deg,#007dec,#0064c7); border-radius: 10px; }
+.momayaz-login .login-privacy { color: #60738c; }
+@media(min-width:1600px) { .erp-shell .erp-content { padding: 38px 48px 46px; } }
+@media(max-width:1100px) {
+  .erp-shell .erp-sidebar { width: 236px; padding-inline: 14px; }
+  .erp-shell .erp-workspace { margin-inline-start: 236px; }
+  .erp-shell .erp-content { padding: 26px; }
+  .erp-shell .erp-topbar { padding-inline: 26px; }
+  .erp-shell .factory-emblem { width: 200px; }
+  .erp-shell .welcome-panel { padding: 28px; }
+  .erp-shell .welcome-panel h2 { font-size: 26px; }
+  .erp-shell .brand-motto { display: none; }
+}
+@media(max-width:767px) {
+  .erp-shell .erp-sidebar { display: none; }
+  .erp-shell .erp-workspace { margin-inline-start: 0; }
+  .erp-shell .erp-topbar { height: 70px; padding-inline: 14px; }
+  .erp-shell .topbar-brand { display: block; }
+  .erp-shell .topbar-brand .momayaz-logo { width: 110px; }
+  .erp-shell .topbar-breadcrumb { display: none; }
+  .erp-shell .erp-content { padding: 24px 16px 30px; }
+  .erp-shell .welcome-panel { padding: 25px; min-height: 235px; border-radius: 18px; }
+  .erp-shell .welcome-panel h2 { font-size: 26px; }
+  .erp-shell .welcome-panel p { font-size: 12px; }
+  .erp-shell .welcome-panel::before { inset-inline-end: -170px; opacity: .55; }
+  .erp-shell .factory-emblem { display: none; }
+  .erp-shell .metric-card { padding: 18px 16px; }
+  .erp-shell .metric-card p { font-size: 11px; }
+  .erp-shell .metric-card>strong { font-size: 29px; }
+  .erp-shell .metric-card small { font-size: 10px; }
+  .erp-shell .metric-icon { width: 28px; height: 28px; inset-inline-end: 13px; top: 16px; border-radius: 9px; }
+  .erp-shell .metric-icon svg { width: 17px; }
+  .erp-shell .shortcut-card { padding: 18px; }
+  .erp-shell .erp-footer { padding: 14px 16px; }
+  .erp-shell .footer-brand { gap: 4px; font-size: 10px; }
+  .erp-shell .footer-brand .momayaz-logo { width: 85px; }
+  .momayaz-login { display: block; background: #f7fafd; }
+  .momayaz-login .login-story { min-height: auto; padding: 20px 26px 32px; gap: 15px; }
+  .momayaz-login .login-brand .momayaz-logo { width: 210px; margin-inline-start: -23px; }
+  .momayaz-login .login-story h1 { font-size: 29px; margin-block: 8px; }
+  .momayaz-login .login-story h1+p { font-size: 12px; }
+  .momayaz-login .login-story-footer, .momayaz-login .login-features { display: none; }
+  .momayaz-login .login-form-panel { padding: 24px 16px 36px; }
+  .momayaz-login .login-form-inner { padding: 27px 23px; max-width: 440px; }
+  .momayaz-login .login-form-logo { width: 155px; margin-bottom: 20px; }
+}
+@media print {
+  .erp-shell { background: white; color: #112846; }
+  .erp-shell .erp-workspace { margin: 0; }
+  .erp-shell .erp-content { padding: 0; max-width: none; min-height: 0; }
+  .erp-shell .workspace-print-brand { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0084ff; padding-bottom: 15px; margin-bottom: 24px; font-size: 12px; }
+  .erp-shell .workspace-print-brand .momayaz-logo { width: 180px; }
+  .erp-shell .document-logo { width: 175px; }
+  .erp-shell .welcome-panel::before, .erp-shell .welcome-panel::after { display: none; }
+  .erp-shell .welcome-panel { background: white; color: #112846; }
+  .erp-shell .welcome-panel p { color: #334e68; }
+  .erp-shell .metric-card, .erp-shell .surface-card { box-shadow: none; }
+}

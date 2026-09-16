@@ -39,8 +39,20 @@ export type Database = {
   }
   public: {
     Tables: {
+      delivery_notes: {
+        Row: { id: string; note_number: number; delivery_date: string; customer_name: string; recipient_name: string; recipient_phone: string; delivery_address: string; driver_name: string; vehicle_number: string; notes: string; items: Json; created_at: string; created_by: string }
+        Insert: { id?: string; delivery_date: string; customer_name: string; recipient_name: string; recipient_phone?: string; delivery_address?: string; driver_name?: string; vehicle_number?: string; notes?: string; items: Json }
+        Update: never
+        Relationships: []
+      }
+      integration_status: {Row:{name:string;last_success:string|null;last_error:string|null;details:Json};Insert:{name:string;last_success?:string|null;last_error?:string|null;details?:Json};Update:{name?:string;last_success?:string|null;last_error?:string|null;details?:Json};Relationships:[]};
+      sync_events: {Row:{id:string;table_name:string;created_at:string};Insert:{id?:string;table_name:string;created_at?:string};Update:{id?:string;table_name?:string;created_at?:string};Relationships:[]};
+      user_access: { Row:{user_id:string;email:string;role:string;permissions:string[];active:boolean;created_at:string}; Insert:{user_id:string;email:string;role?:string;permissions?:string[];active?:boolean}; Update:{role?:string;permissions?:string[];active?:boolean}; Relationships:[] }
+      access_audit: { Row:{id:string;user_id:string;changed_by:string|null;changed_at:string;old_value:Json|null;new_value:Json|null}; Insert:never;Update:never;Relationships:[] }
+
       attendance: {
         Row: {
+          extra_type: string
           extra_units: number
           factory_id: string | null
           id: string
@@ -49,6 +61,7 @@ export type Database = {
           worker_id: string
         }
         Insert: {
+          extra_type?: string
           extra_units?: number
           factory_id?: string | null
           id?: string
@@ -57,6 +70,7 @@ export type Database = {
           worker_id: string
         }
         Update: {
+          extra_type?: string
           extra_units?: number
           factory_id?: string | null
           id?: string
@@ -157,9 +171,14 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_returns: {
+        Row: { voided_at: string | null; voided_reason: string | null; id: string; factory_id: string | null; invoice_id: string; amount: number; condition: string; note: string | null; created_at: string }
+        Insert: { voided_at?: string | null; voided_reason?: string | null; id?: string; factory_id?: string | null; invoice_id: string; amount: number; condition: string; note?: string | null; created_at?: string }
+        Update: { voided_at?: string | null; voided_reason?: string | null; id?: string; factory_id?: string | null; invoice_id?: string; amount?: number; condition?: string; note?: string | null; created_at?: string }
+        Relationships: [{ foreignKeyName: "sales_returns_invoice_id_fkey"; columns: ["invoice_id"]; isOneToOne: false; referencedRelation: "invoices"; referencedColumns: ["id"] }]
+      }
       invoices: {
         Row: {
-          balance_due: number
           created_at: string
           due_date: string | null
           factory_id: string | null
@@ -169,7 +188,6 @@ export type Database = {
           total: number
         }
         Insert: {
-          balance_due: number
           created_at?: string
           due_date?: string | null
           factory_id?: string | null
@@ -179,7 +197,6 @@ export type Database = {
           total: number
         }
         Update: {
-          balance_due?: number
           created_at?: string
           due_date?: string | null
           factory_id?: string | null
@@ -192,7 +209,7 @@ export type Database = {
           {
             foreignKeyName: "invoices_order_id_fkey"
             columns: ["order_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -283,8 +300,26 @@ export type Database = {
         }
         Relationships: []
       }
+      product_specs: {
+        Row: { id: string; factory_id: string | null; name: string; active: boolean }
+        Insert: { id?: string; factory_id?: string | null; name: string; active?: boolean }
+        Update: { id?: string; factory_id?: string | null; name?: string; active?: boolean }
+        Relationships: []
+      }
+      product_spec_materials: {
+        Row: { spec_id: string; material_id: string; qty_per_unit: number }
+        Insert: { spec_id: string; material_id: string; qty_per_unit: number }
+        Update: { spec_id?: string; material_id?: string; qty_per_unit?: number }
+        Relationships: [
+          { foreignKeyName: "product_spec_materials_spec_id_fkey"; columns: ["spec_id"]; isOneToOne: false; referencedRelation: "product_specs"; referencedColumns: ["id"] },
+          { foreignKeyName: "product_spec_materials_material_id_fkey"; columns: ["material_id"]; isOneToOne: false; referencedRelation: "materials"; referencedColumns: ["id"] }
+        ]
+      }
       orders: {
         Row: {
+          product_spec_id: string | null
+          material_requirements: Json
+          material_overrides: Json
           client_id: string
           created_at: string
           factory_id: string | null
@@ -296,6 +331,9 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          product_spec_id?: string | null
+          material_requirements?: Json
+          material_overrides?: Json
           created_at?: string
           factory_id?: string | null
           id?: string
@@ -306,6 +344,9 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          product_spec_id?: string | null
+          material_requirements?: Json
+          material_overrides?: Json
           created_at?: string
           factory_id?: string | null
           id?: string
@@ -320,6 +361,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_product_spec_id_fkey"
+            columns: ["product_spec_id"]
+            isOneToOne: false
+            referencedRelation: "product_specs"
             referencedColumns: ["id"]
           },
           {
@@ -371,6 +419,8 @@ export type Database = {
       }
       quotations: {
         Row: {
+          parsed_items: Json
+          share_token: string
           client_id: string | null
           converted_order_id: string | null
           created_at: string
@@ -383,6 +433,8 @@ export type Database = {
           status: string
         }
         Insert: {
+          parsed_items?: Json
+          share_token?: string
           client_id?: string | null
           converted_order_id?: string | null
           created_at?: string
@@ -395,6 +447,8 @@ export type Database = {
           status?: string
         }
         Update: {
+          parsed_items?: Json
+          share_token?: string
           client_id?: string | null
           converted_order_id?: string | null
           created_at?: string
@@ -460,24 +514,30 @@ export type Database = {
       }
       suppliers: {
         Row: {
-          balance: number
+          opening_balance: number
           factory_id: string | null
           id: string
           name: string
         }
         Insert: {
-          balance?: number
+          opening_balance?: number
           factory_id?: string | null
           id?: string
           name: string
         }
         Update: {
-          balance?: number
+          opening_balance?: number
           factory_id?: string | null
           id?: string
           name?: string
         }
         Relationships: []
+      }
+      worker_payouts: {
+        Row: { voided_at: string | null; voided_reason: string | null; id: string; factory_id: string | null; worker_id: string; week_start: string; week_end: string; days_present: number; daily_wage: number; attendance_bonus: number; transaction_bonus: number; advances: number; deductions: number; net_amount: number; paid_at: string }
+        Insert: { voided_at?: string | null; voided_reason?: string | null; id?: string; worker_id: string; week_start: string; factory_id?: string | null; week_end?: string; days_present?: number; daily_wage?: number; attendance_bonus?: number; transaction_bonus?: number; advances?: number; deductions?: number; net_amount?: number; paid_at?: string }
+        Update: { voided_at?: string | null; voided_reason?: string | null; worker_id?: string; week_start?: string }
+        Relationships: [{ foreignKeyName: "worker_payouts_worker_id_fkey"; columns: ["worker_id"]; isOneToOne: false; referencedRelation: "workers"; referencedColumns: ["id"] }]
       }
       worker_transactions: {
         Row: {
@@ -537,12 +597,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      supplier_balances:{Row:{id:string;factory_id:string|null;name:string;opening_balance:number;balance:number};Relationships:[]}
+      supplier_directory:{Row:{id:string;name:string};Relationships:[]}
+      worker_directory:{Row:{id:string;name:string};Relationships:[]}
+      attendance_status:{Row:{id:string;worker_id:string;work_date:string;status:string;extra_units:number;extra_type:string;worker_name:string;week_paid:boolean};Relationships:[]}
+
+      invoice_balances: {
+        Row: { id: string; factory_id: string | null; order_id: string; invoice_number: string; total: number; created_at: string; due_date: string | null; client_id: string; quantity: number; client_name: string; client_type: string; paid_amount: number; returned_amount: number; balance_due: number }
+        Relationships: []
+      }
     }
     Functions: {
+      get_weekly_payroll: { Args: { p_week_start: string; p_search?: string }; Returns: Json }
+      pay_workers_week: { Args: { p_worker_ids: string[]; p_week_start: string }; Returns: number }
+      calculate_worker_week: { Args: { p_worker_id: string; p_week_start: string }; Returns: { worker_id: string; worker_name: string; factory_id: string | null; daily_wage: number; days_present: number; attendance_bonus: number; transaction_bonus: number; advances: number; deductions: number; net_amount: number }[] }
+      save_product_spec: { Args: { p_id: string | null; p_name: string; p_active: boolean; p_lines: Json }; Returns: string }
+      get_client_statement: { Args: { p_client_id: string }; Returns: Json }
+      record_sales_return: { Args: { p_invoice_id: string; p_amount: number; p_condition: string; p_note?: string }; Returns: string }
+
       create_direct_invoice_atomic: {
         Args: {
-          p_client_id: string
+          p_client_id: string | null
           p_client_name: string
           p_client_phone: string
           p_client_type: string

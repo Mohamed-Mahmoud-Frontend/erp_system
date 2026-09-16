@@ -3,8 +3,7 @@
 -- Notes:
 --   - suppliers created before materials so material_movements can FK to both.
 --   - stock_qty uses NUMERIC to allow fractional kg/ton values.
---   - The auto-decrement trigger for stock_qty lives in 0004_workers.sql
---     just after this file — kept separate for clarity of intent.
+--   - The INSERT trigger below is the only stock adjustment mechanism.
 
 -- ── suppliers ──────────────────────────────────────────────────────────────
 create table if not exists suppliers (
@@ -70,9 +69,8 @@ create index if not exists material_movements_direction_idx    on material_movem
 -- ── Stock auto-decrement trigger ──────────────────────────────────────────
 --
 -- Rule (confirmed in project brief):
---   INSERT direction='out', is_return=false, order_id IS NOT NULL → decrement stock_qty
---   INSERT direction='out', is_return=true                        → NO stock restore (written off)
---   INSERT direction='in'                                         → increment stock_qty
+--   Normal out movements decrement stock, normal in movements increment stock.
+--   Returns in either direction leave usable stock unchanged (written off).
 --
 -- The trigger runs in the same transaction as the INSERT, so the decrement
 -- is atomic with the movement record.
@@ -80,11 +78,13 @@ create index if not exists material_movements_direction_idx    on material_movem
 create or replace function decrement_material_stock()
 returns trigger
 language plpgsql
-security definer          -- runs with elevated rights so RLS doesn't block the update
+security invoker
 set search_path = public
 as $$
 begin
-  if NEW.direction = 'out' and NEW.is_return = false and NEW.order_id is not null then
+  if NEW.is_return then
+    return NEW;
+  elsif NEW.direction = 'out' then
     -- Consume stock: deduct from materials
     update materials
        set stock_qty = stock_qty - NEW.qty
@@ -112,6 +112,5 @@ create trigger trg_material_stock_auto_adjust
 
 comment on function decrement_material_stock() is
   'Automatically adjusts materials.stock_qty when a material_movement is inserted.
-   direction=out + is_return=false + order_id NOT NULL → decrements.
-   direction=in → increments.
-   direction=out + is_return=true → no change (return is written off).';
+   Normal out decrements; normal in increments.
+   Returns in either direction leave usable stock unchanged.';

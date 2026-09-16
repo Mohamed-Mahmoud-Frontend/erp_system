@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { Cairo } from "next/font/google";
 import Link from "next/link";
 import "../globals.css";
 
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  variable: "--font-cairo",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   title: {
-    template: "%s | مصنع البوليمر لخزانات المياه",
-    default: "مصنع البوليمر لخزانات المياه — جودة وثقة",
+    template: "%s | مميز",
+    default: "مميز | نظام إدارة المصنع",
   },
   description:
     "مصنع متخصص في تصنيع خزانات المياه بجميع الأحجام والمواصفات. نخدم المقاولين والتجار والأفراد في جميع أنحاء مصر.",
@@ -24,7 +17,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.variable}>
+    <html lang="ar" dir="rtl">
       <body className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 flex flex-col">
         {/* Navigation Bar */}
         <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/80 border-b border-slate-200">
@@ -32,7 +25,7 @@ export default function PublicLayout({
             <div className="flex justify-between h-20 items-center">
               <div className="flex-shrink-0 flex items-center">
                 <Link href="/" className="text-2xl font-black text-blue-700 tracking-tight">
-                  مصنع <span className="text-blue-500">البوليمر</span>
+                  <span>مميز</span><small className="block text-[10px] font-medium tracking-normal text-slate-500" dir="ltr">digital product &amp; software</small>
                 </Link>
               </div>
               <nav className="hidden md:flex gap-8">
@@ -71,9 +64,9 @@ export default function PublicLayout({
         <footer className="bg-slate-900 text-slate-300 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">مصنع البوليمر</h3>
+              <h3 className="text-xl font-bold text-white mb-4">مميز</h3>
               <p className="text-sm leading-relaxed text-slate-400">
-                رواد صناعة خزانات المياه البلاستيكية عالية الجودة. نضمن لك المتانة والعمر الطويل بأفضل الأسعار التنافسية.
+                نظام مميز لإدارة المصنع، أحد أنظمة شركة مميز للمنتجات الرقمية والبرمجيات.
               </p>
             </div>
             <div>
@@ -94,7 +87,7 @@ export default function PublicLayout({
             </div>
           </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-slate-800 text-sm text-center text-slate-500">
-            &copy; {new Date().getFullYear()} مصنع البوليمر لخزانات المياه. جميع الحقوق محفوظة.
+            &copy; {new Date().getFullYear()} شركة مميز · digital product & software. جميع الحقوق محفوظة.
           </div>
         </footer>
       </body>

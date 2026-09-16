@@ -9,16 +9,17 @@ export type WorkerFormValues = z.infer<typeof workerSchema>;
 
 export const attendanceSchema = z.object({
   worker_id: z.string().uuid("العامل مطلوب"),
-  work_date: z.string(),
-  status: z.enum(["present", "absent", "half_day"]),
-  extra_units: z.number().min(0).default(0), // overtime hours or extra pieces
+  work_date: z.iso.date(),
+  status: z.enum(["present", "absent", "half_day", "quarter_day"]),
+  extra_type: z.enum(["amount", "day_fraction"]).default("amount"),
+  extra_units: z.number().min(0).default(0),
 });
 
 export type AttendanceFormValues = z.infer<typeof attendanceSchema>;
 
 export const workerTransactionSchema = z.object({
   worker_id: z.string().uuid("العامل مطلوب"),
-  type: z.enum(["bonus", "deduction", "payout"]),
+  type: z.enum(["bonus", "deduction", "advance"]),
   amount: z.number().min(0.01, "المبلغ يجب أن يكون أكبر من الصفر"),
 });
 

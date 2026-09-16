@@ -42,7 +42,7 @@ async function main() {
   // 2. Suppliers
   const { data: suppliers, error: suppErr } = await supabase
     .from("suppliers")
-    .insert([{ name: "مورد البلاستيك الخام", balance: 0 }])
+    .insert([{ name: "مورد البلاستيك الخام", opening_balance: 0 }])
     .select();
   if (suppErr) throw suppErr;
   console.log(`✅ Inserted ${suppliers.length} suppliers`);

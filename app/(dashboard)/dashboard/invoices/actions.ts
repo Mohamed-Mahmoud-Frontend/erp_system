@@ -52,7 +52,7 @@ export async function createDirectInvoiceAction(prevState: unknown, formData: Fo
   const rawData = {
     client_id: formData.get("client_id") || "",
     client_name: formData.get("client_name") || "",
-    client_type: formData.get("client_type") || "",
+    client_type: formData.get("client_type") || undefined,
     client_phone: formData.get("client_phone") || "",
     items: items,
     total: Number(formData.get("total")),

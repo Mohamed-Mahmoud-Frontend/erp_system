@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const orderItemSchema = z.object({
   capacity: z.string().min(1, "يجب تحديد السعة"),
-  quantity: z.number().min(1, "الكمية يجب أن تكون 1 أو أكثر"),
+  quantity: z.number().int("الكمية يجب أن تكون عددًا صحيحًا").min(1, "الكمية يجب أن تكون 1 أو أكثر"),
 });
 
 export const createOrderSchema = z.object({

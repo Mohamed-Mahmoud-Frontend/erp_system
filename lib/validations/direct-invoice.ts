@@ -21,6 +21,9 @@ export const directInvoiceSchema = z.object({
     message: "يجب اختيار عميل حالي أو إدخال بيانات عميل جديد بشكل صحيح",
     path: ["client_name"],
   }
-);
+).refine(data => data.paid_amount <= data.total, {
+  message: "المبلغ المدفوع أكبر من إجمالي الفاتورة",
+  path: ["paid_amount"],
+});
 
 export type DirectInvoiceFormValues = z.infer<typeof directInvoiceSchema>;

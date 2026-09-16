@@ -1,6 +1,9 @@
+-- ARCHIVED HISTORICAL SNAPSHOT. DO NOT APPLY OR INITIALIZE A DATABASE WITH THIS FILE.
+-- Only supabase/migrations/*.sql is authoritative. Retained as drift-audit evidence.
 -- ============================================================
---  Water Tank Factory ERP — Full Schema + RLS + Trigger
---  Run this entire file in the Supabase SQL Editor once.
+--  Water Tank Factory ERP — legacy base schema (0001 through 0005)
+--  Use supabase/migrations for current installations and upgrades.
+--  This historical snapshot does not include later RPCs or quotation sharing.
 --  Order matters — don't reorder sections.
 -- ============================================================
 
@@ -225,20 +228,19 @@ create index if not exists worker_transactions_created_at_idx on worker_transact
 -- ===========================================================================
 --
 -- Rules (per project brief):
---   INSERT direction='out', is_return=false, order_id NOT NULL → decrement stock_qty
---   INSERT direction='in'                                      → increment stock_qty
---   INSERT direction='out', is_return=true                     → NO change (written off)
---
--- SECURITY DEFINER so the internal UPDATE to materials bypasses RLS.
+--   Normal out subtracts; normal in adds; returns never change usable stock.
+--   This trigger is the only movement stock writer.
 
 create or replace function decrement_material_stock()
 returns trigger
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
 begin
-  if NEW.direction = 'out' and NEW.is_return = false and NEW.order_id is not null then
+  if NEW.is_return then
+    return NEW;
+  elsif NEW.direction = 'out' then
     update materials
        set stock_qty = stock_qty - NEW.qty
      where id = NEW.material_id;

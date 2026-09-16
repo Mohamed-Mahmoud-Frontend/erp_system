@@ -69,8 +69,7 @@ export async function recordMovementAction(prevState: unknown, formData: FormDat
     p_supplier_id: supplier_id || undefined,
     p_order_id: order_id || undefined,
     p_is_return: is_return,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any);
+  });
 
   if (rpcError) {
     console.error("Movement recording error:", rpcError);

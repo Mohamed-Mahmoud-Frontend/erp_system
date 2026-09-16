@@ -12,7 +12,7 @@ type ClientSimple = {
   price_tier: string | null;
 };
 
-export default function NewOrderForm({ clients }: { clients: ClientSimple[] }) {
+export default function NewOrderForm({ clients, canCreateClient=true }: { clients: ClientSimple[]; canCreateClient?: boolean }) {
   const [state, action] = useActionState(createOrderAction, null);
   const [isPending, startTransition] = useTransition();
 
@@ -62,6 +62,7 @@ export default function NewOrderForm({ clients }: { clients: ClientSimple[] }) {
             <input 
               type="radio" 
               checked={clientMode === "new"} 
+              disabled={!canCreateClient}
               onChange={() => setClientMode("new")} 
               className="text-blue-600 focus:ring-blue-500"
             />
@@ -142,7 +143,7 @@ export default function NewOrderForm({ clients }: { clients: ClientSimple[] }) {
         </div>
 
         <div className="space-y-3">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <div key={item.id} className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div className="flex-1">
                 <label className="block text-xs font-medium text-slate-500 mb-1">

@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import MovementForm from "./movement-form";
@@ -7,13 +8,16 @@ export const metadata = {
 };
 
 export default async function NewMovementPage() {
+  await requirePermission("production");
+
   const supabase = await createClient();
 
-  const [{ data: materials }, { data: suppliers }] = await Promise.all([
+  const [{ data: materials, error: materialsError }, { data: suppliers, error: suppliersError }] = await Promise.all([
     supabase.from("materials").select("id, type, unit, stock_qty").order("type"),
-    supabase.from("suppliers").select("id, name").order("name"),
+    supabase.from("supplier_directory").select("id, name").order("name"),
   ]);
 
+  if (materialsError || suppliersError) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between">

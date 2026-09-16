@@ -1,0 +1,17 @@
+{
+  "description": "Hand calculation fixed before testing the payroll implementation.",
+  "week_dates": ["2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10"],
+  "statuses": ["present", "present", "half_day", "quarter_day", "absent", "present", "present"],
+  "daily_wage": 400,
+  "days_present": 4.75,
+  "base_pay": 1900,
+  "amount_extra": 75,
+  "fraction_extra": 0.5,
+  "fraction_extra_egp": 200,
+  "attendance_bonus": 275,
+  "transaction_bonus": 125,
+  "advances": 300,
+  "deductions": 50,
+  "equation": "(4 + 0.5 + 0.25) * 400 + 75 + 0.5 * 400 + 125 - 300 - 50",
+  "net_amount": 1950
+}

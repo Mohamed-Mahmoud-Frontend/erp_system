@@ -18,6 +18,7 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (pathname === "/api/health") return NextResponse.next();
 
   // Build a response we can mutate (needed for Supabase cookie refresh)
   let response = NextResponse.next({

@@ -67,7 +67,7 @@ export async function updateClientAction(id: string, prevState: unknown, formDat
     };
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("clients")
     .update({
       name: parsed.data.name,
@@ -77,7 +77,7 @@ export async function updateClientAction(id: string, prevState: unknown, formDat
       price_tier: parsed.data.price_tier,
       credit_days: parsed.data.credit_days,
     })
-    .eq("id", id);
+    .eq("id", id).select("id").maybeSingle();
 
   if (error) {
     console.error("Update client error:", error);
@@ -85,6 +85,8 @@ export async function updateClientAction(id: string, prevState: unknown, formDat
       message: "حدث خطأ أثناء تحديث بيانات العميل. يرجى المحاولة مرة أخرى.",
     };
   }
+
+  if (!updated) return { message: "العميل غير موجود أو لم يعد متاحًا للتعديل." };
 
   revalidatePath(`/dashboard/clients/${id}`);
   revalidatePath("/dashboard/clients");

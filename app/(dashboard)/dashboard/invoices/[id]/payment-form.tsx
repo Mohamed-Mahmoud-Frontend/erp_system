@@ -24,10 +24,10 @@ export default function PaymentForm({ invoiceId, balanceDue }: { invoiceId: stri
     }
   }, [state]);
 
-  if (balanceDue === 0) {
+  if (balanceDue <= 0) {
     return (
       <div className="bg-green-50 text-green-800 p-6 rounded-xl border border-green-200 text-center">
-        <h3 className="text-lg font-bold mb-2">الفاتورة مدفوعة بالكامل ✅</h3>
+        <h3 className="text-lg font-bold mb-2">لا توجد دفعة مستحقة</h3>
         <p>لا يوجد رصيد مستحق على هذه الفاتورة.</p>
       </div>
     );

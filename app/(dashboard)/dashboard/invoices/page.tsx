@@ -1,3 +1,5 @@
+import { requirePermission } from "@/lib/access";
+import { balanceLabel, isOverdue as overdue } from "@/lib/billing";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,25 +8,13 @@ export const metadata = {
 };
 
 export default async function InvoicesPage() {
+  await requirePermission("sales");
+
   const supabase = await createClient();
 
   const { data: invoices, error } = await supabase
-    .from("invoices")
-    .select(`
-      id,
-      invoice_number,
-      total,
-      balance_due,
-      due_date,
-      created_at,
-      orders (
-        quantity,
-        clients (
-          name,
-          type
-        )
-      )
-    `)
+    .from("invoice_balances")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -50,6 +40,7 @@ export default async function InvoicesPage() {
         </Link>
       </div>
 
+      <Link href="/dashboard/cheques" className="inline-block text-blue-700 underline">إدارة الشيكات</Link>
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm">
@@ -75,17 +66,17 @@ export default async function InvoicesPage() {
                 </tr>
               ) : (
                 invoices?.map((invoice) => {
-                  const isPaid = invoice.balance_due === 0;
-                  const isOverdue = !isPaid && invoice.due_date && new Date(invoice.due_date) < new Date();
-                  const paidAmount = invoice.total - invoice.balance_due;
+                  const isPaid = invoice.balance_due <= 0;
+                  const isOverdue = overdue(invoice.due_date, invoice.balance_due);
+                  const paidAmount = invoice.paid_amount;
                   
                   return (
                     <tr key={invoice.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-medium text-slate-900" dir="ltr">{invoice.invoice_number}</td>
                       <td className="px-6 py-4 text-slate-900 font-medium">
-                        {invoice.orders?.clients?.name || "غير معروف"}
-                        {invoice.orders?.clients?.type && (
-                          <span className="text-xs text-slate-500 mr-2">({invoice.orders.clients.type})</span>
+                        {invoice.client_name || "غير معروف"}
+                        {invoice.client_type && (
+                          <span className="text-xs text-slate-500 mr-2">({invoice.client_type})</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-slate-600">
@@ -101,12 +92,12 @@ export default async function InvoicesPage() {
                         {paidAmount.toLocaleString()} ج.م
                       </td>
                       <td className="px-6 py-4 font-medium text-red-600">
-                        {invoice.balance_due.toLocaleString()} ج.م
+                        {balanceLabel(invoice.balance_due)}
                       </td>
                       <td className="px-6 py-4 text-center">
                         {isPaid ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            مدفوعة
+                            {invoice.balance_due < 0 ? "رصيد دائن للعميل" : "مسددة / مسواة"}
                           </span>
                         ) : isOverdue ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">

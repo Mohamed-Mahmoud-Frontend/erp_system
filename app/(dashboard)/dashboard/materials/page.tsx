@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,13 +7,16 @@ export const metadata = {
 };
 
 export default async function MaterialsPage() {
+  await requirePermission("production");
+
   const supabase = await createClient();
 
-  const { data: materials } = await supabase
+  const { data: materials, error } = await supabase
     .from("materials")
     .select("*")
     .order("type", { ascending: true });
 
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

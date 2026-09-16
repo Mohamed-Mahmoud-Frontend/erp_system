@@ -1,0 +1,23 @@
+﻿import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {createHmac,createHash,randomUUID} from 'node:crypto';
+import vm from 'node:vm';
+const secret='isolated-hmac-test-secret',props=new Map(),cache=new Map(),files=new Map(),books=new Map();let failWrite=false;
+const iterator=values=>{let i=0;return {hasNext:()=>i<values.length,next:()=>values[i++]};};
+const blob=(v,mime,name)=>({bytes:typeof v==='string'?Buffer.from(v):Buffer.from(v),getDataAsString(){return this.bytes.toString('utf8');},getBytes(){return Array.from(this.bytes);},name});
+const folder={getId:()=> 'test-folder',getFilesByName:name=>iterator([...files.values()].filter(f=>f.name===name)),createFile:b=>{const id=randomUUID(),f={id,name:b.name,getId:()=>id,getBlob:()=>b,moveTo(){}};files.set(id,f);return f;}};
+function spreadsheet(name){const id=randomUUID(),sheets=[];const book={getId:()=>id,insertSheet:n=>{const sheet={name:n,values:null,getSheetId:()=>n,getMaxRows:()=>1000,getMaxColumns:()=>26,insertRowsAfter(){},insertColumnsAfter(){},getRange:()=>({setValues(v){if(failWrite)throw Error('Injected Google write failure');sheet.values=v;}}),setFrozenRows(){},setName(n){sheet.name=n;}};sheets.push(sheet);return sheet;},getSheetByName:n=>sheets.find(s=>s.name===n),getSheets:()=>sheets,deleteSheet:s=>{sheets.splice(sheets.indexOf(s),1);}};books.set(id,book);files.set(id,{name,getId:()=>id,moveTo(){}});return book;}
+let locked=false;
+const context={Date,JSON,Error,String,Number,Array,Math,Utilities:{computeHmacSha256Signature:(v,k)=>Array.from(createHmac('sha256',k).update(v).digest()),base64Decode:v=>Array.from(Buffer.from(v,'base64')),newBlob:blob,DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(a,b)=>Array.from(createHash(a).update(Buffer.from(b)).digest())},LockService:{getScriptLock:()=>({waitLock(){locked=true;},hasLock:()=>locked,releaseLock(){locked=false;}})},CacheService:{getScriptCache:()=>({get:k=>cache.get(k),put:(k,v)=>cache.set(k,v)})},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props.get(k),setProperty:(k,v)=>props.set(k,v)})},DriveApp:{getFoldersByName:()=>iterator([]),createFolder:()=>folder,getFolderById:()=>folder,getFileById:id=>files.get(id)},SpreadsheetApp:{create:spreadsheet,openById:id=>books.get(id),flush(){}},ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({text,setMimeType(){return this;}})}};
+vm.createContext(context);vm.runInContext((await readFile('integrations/google-drive.gs','utf8')).replace("const ERP_SECRET = '__ERP_SECRET__';",`const ERP_SECRET = '${secret}';`),context);
+function request(payload,override={}){const ts=Date.now(),nonce=randomUUID(),encoded=Buffer.from(JSON.stringify(payload)).toString('base64');return {ts,nonce,payload:encoded,signature:createHmac('sha256',secret).update(ts+'.'+nonce+'.'+encoded).digest('hex'),...override};}
+const call=r=>JSON.parse(context.doPost({postData:{contents:JSON.stringify(r)}}).text);
+const payload={kind:'sheet',table:'clients',snapshot_at:'2026-09-09T16:00:00Z',columns:['id','name'],rows:[{id:'client-1',name:'=IMPORTXML("unsafe")'}]};
+assert.equal(call(request(payload,{signature:'forged'})).ok,false);assert.equal(files.size,0);
+const req=request(payload),ok=call(req);assert.equal(ok.ok,true);assert.equal(ok.row_count,1);const sheet=books.get(ok.file_id).getSheetByName('الحالة الحالية');assert.equal(sheet.values[1][1],"'=IMPORTXML(\"unsafe\")");
+assert.equal(call(req).ok,false);
+failWrite=true;assert.equal(call(request({...payload,snapshot_at:'2026-09-09T17:00:00Z'})).ok,false);assert.equal(books.get(ok.file_id).getSheetByName('الحالة الحالية'),sheet);failWrite=false;
+assert.equal(call(request({...payload,snapshot_at:'2026-09-09T15:00:00Z'})).ok,false);
+const bytes=Buffer.from('isolated encrypted archive bytes'),backup={kind:'backup',name:'erp-test.dump.enc',sha256:createHash('sha256').update(bytes).digest('hex'),data:bytes.toString('base64')};
+assert.equal(call(request({...backup,sha256:'wrong'})).ok,false);const uploaded=call(request(backup));assert.equal(uploaded.ok,true);assert.equal(call(request(backup)).file_id,uploaded.file_id);
+await mkdir('audit/readiness',{recursive:true});await writeFile('audit/readiness/google-bridge-test.json',JSON.stringify({tested_at:new Date().toISOString(),live_google:false,hmac_rejects_forgery:true,replay_rejected:true,formula_escaped:true,failed_write_preserves_previous_sheet:true,older_snapshot_rejected:true,backup_checksum_verified:true,retry_same_file:true},null,2));console.log('PASS actual Apps Script code with isolated Google IO: HMAC/replay, formula escaping, failed write preservation, stale ordering, backup checksum/idempotency. This is NOT a live Google integration test.');

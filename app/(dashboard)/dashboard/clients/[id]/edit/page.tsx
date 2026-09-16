@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +14,8 @@ export default async function EditClientPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requirePermission("sales");
+
   const { id } = await params;
   const supabase = await createClient();
 
@@ -20,11 +23,10 @@ export default async function EditClientPage({
     .from("clients")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error || !client) {
-    notFound();
-  }
+  if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل البيانات. أعد المحاولة؛ لا يمكن الاعتماد على الملخص أو إتمام الإدخال حتى نجاح القراءة.</p>;
+  if (!client) notFound();
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">

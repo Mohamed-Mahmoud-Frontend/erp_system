@@ -7,6 +7,9 @@ import { paymentSchema } from "@/lib/validations/payment";
 export async function recordPaymentAction(prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { message: "يجب تسجيل الدخول أولًا." };
+
   const rawData = {
     invoice_id: formData.get("invoice_id"),
     amount: Number(formData.get("amount")),
@@ -31,12 +34,11 @@ export async function recordPaymentAction(prevState: unknown, formData: FormData
     p_amount: amount,
     p_method: method,
     p_cheque_due_date: cheque_due_date || undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any);
+  });
 
   if (rpcError) {
     console.error("Payment recording error:", rpcError);
-    if (rpcError.message.includes("المبلغ المدفوع أكبر من الرصيد")) {
+    if (rpcError.message.includes("المبلغ يجب أن يكون موجبًا")) {
       return { message: "المبلغ المدفوع أكبر من الرصيد المتبقي للفاتورة." };
     }
     return { message: "حدث خطأ أثناء تسجيل الدفعة." };
@@ -44,5 +46,7 @@ export async function recordPaymentAction(prevState: unknown, formData: FormData
 
   revalidatePath(`/dashboard/invoices/${invoice_id}`);
   revalidatePath(`/dashboard/invoices`);
+  revalidatePath("/dashboard/clients/[id]", "page");
+  revalidatePath("/dashboard/cheques");
   return { success: true, message: "تم تسجيل الدفعة بنجاح" };
 }

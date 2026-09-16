@@ -1,0 +1,48 @@
+﻿import assert from 'node:assert/strict';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {createTestDb} from './test-db.mjs';
+import {moduleLoader} from './test-modules.mjs';
+const db=await createTestDb(),uid='40000000-0000-4000-8000-000000000001',c='40000000-0000-4000-8000-000000000002',m='40000000-0000-4000-8000-000000000003',spec='40000000-0000-4000-8000-000000000004',o='40000000-0000-4000-8000-000000000005';
+const steps=[];
+try{
+ await db.exec((await readFile('scripts/verify-permissions.sql','utf8')).replace(/^\uFEFF/,''));
+ await assert.rejects(db.exec("UPDATE user_access SET active=false WHERE role='admin'"),/آخر مدير/);
+ await db.query('INSERT INTO auth.users(id,email) VALUES($1,$2)',[uid,'staff@test.example']);
+ await db.query('INSERT INTO user_access(user_id,email,permissions) VALUES($1,$2,$3)',[uid,'staff@test.example',['production']]);
+ await db.query("INSERT INTO clients(id,name,type) VALUES($1,'RBAC client','trader')",[c]);
+ await db.query("INSERT INTO materials(id,type,unit,stock_qty) VALUES($1,'RBAC raw','kg',100)",[m]);
+ await db.query("INSERT INTO product_specs(id,name) VALUES($1,'RBAC recipe')",[spec]);await db.query('INSERT INTO product_spec_materials VALUES($1,$2,2)',[spec,m]);
+ await db.exec('SET ROLE authenticated');await db.query("SELECT set_config('request.jwt.claim.sub',$1,false)",[uid]);
+ await db.query("INSERT INTO orders(id,client_id,quantity,product_spec_id,product_spec) VALUES($1,$2,3,$3,'{}')",[o,c,spec]);
+ await db.query("UPDATE orders SET status='in_production' WHERE id=$1",[o]);
+ assert.equal(Number((await db.query('SELECT stock_qty FROM materials WHERE id=$1',[m])).rows[0].stock_qty),94);
+ assert.equal((await db.query('SELECT * FROM material_movements WHERE order_id=$1',[o])).rows.length,1);
+ await assert.rejects(db.query("SELECT save_product_spec(NULL,'forged',true,$1)",[JSON.stringify([{material_id:m,qty_per_unit:3}])]),/row-level security/);
+ assert.equal((await db.query('DELETE FROM product_spec_materials WHERE spec_id=$1 RETURNING *',[spec])).rows.length,0);
+ await assert.rejects(db.query("INSERT INTO invoices(order_id,invoice_number,total) VALUES($1,'RBAC',1000)",[o]),/row-level security/);
+ steps.push({role:'production',stock_before:100,stock_after:94,movements:1,recipe_mutation_denied:true,billing_denied:true});
+ await db.exec('SET ROLE postgres');await db.query("UPDATE user_access SET permissions=ARRAY['sales'] WHERE user_id=$1",[uid]);await db.exec('SET ROLE authenticated');
+ await db.query("INSERT INTO invoices(order_id,invoice_number,total) VALUES($1,'RBAC',1000)",[o]);
+ const invoice=(await db.query('SELECT id FROM invoices WHERE order_id=$1',[o])).rows[0].id;
+ await db.query("INSERT INTO payments(invoice_id,amount,method,paid_at) VALUES($1,200,'cash',CURRENT_DATE)",[invoice]);
+ assert.equal(Number((await db.query('SELECT balance_due FROM invoice_balances WHERE id=$1',[invoice])).rows[0].balance_due),800);
+ await assert.rejects(db.query("UPDATE orders SET status='completed' WHERE id=$1",[o]),e=>e.code==='42501');
+ const returned=(await db.query("SELECT record_sales_return($1,100,'test') AS id",[invoice])).rows[0].id;
+ assert.equal((await db.query("UPDATE sales_returns SET voided_at=now(),voided_reason='forged' WHERE id=$1 RETURNING id",[returned])).rows.length,0);
+ steps.push({role:'sales',invoice:1000,payment:200,balance:800,manufacturing_denied:true,void_denied:true});
+ await assert.rejects(db.query("SELECT sheet_snapshot('invoices')"),e=>e.code==='42501');
+ await db.exec('SET ROLE service_role');
+ const snapshot=(await db.query("SELECT sheet_snapshot('invoices') AS data")).rows[0].data;assert.equal(Number(snapshot.rows[0].balance_due),700);
+ const before=new Set(snapshot.event_ids);
+ await db.query("UPDATE invoices SET note='sync retry test' WHERE id=$1",[invoice]).catch(async e=>{if(e.code!=='42703')throw e;await db.query('UPDATE invoices SET total=total WHERE id=$1',[invoice]);});
+ await db.query('DELETE FROM sync_events WHERE id=ANY($1::uuid[])',[snapshot.event_ids]);
+ const pending=(await db.query("SELECT sheet_snapshot('invoices') AS data")).rows[0].data.event_ids;assert.ok(pending.length>0);assert.ok(pending.every(id=>!before.has(id)));
+ const quote=(await db.query("SELECT sheet_snapshot('quotations') AS data")).rows[0].data;assert.ok(!quote.columns.includes('share_token'));
+ await assert.rejects(db.query("SELECT sheet_snapshot('auth.users')"),/Unknown export table/);
+ steps.push({sync:'snapshot balance700; exact acknowledgement leaves later changes pending; auth export and quotation token excluded'});
+ let providerCalls=0;const load=moduleLoader({'@/lib/access':{getAccess:async()=>({role:'employee',active:true,permissions:['attendance']}),allowed:()=>false},'@/lib/supabase/server':{createClient:async()=>({auth:{getUser:async()=>({data:{user:{id:uid}},error:null})}})},openai:class{constructor(){providerCalls++;}}});
+ const response=await load('app/api/quotations/ai/route.ts').POST(new Request('http://localhost/api/quotations/ai',{method:'POST',body:'{}'}));assert.equal(response.status,403);assert.equal(providerCalls,0);
+ steps.push({unauthorized_ai_http:403,provider_calls:0});
+ await mkdir('audit/readiness',{recursive:true});await writeFile('audit/readiness/permissions.json',JSON.stringify({verified_at:new Date().toISOString(),isolated:true,steps},null,2));console.log(JSON.stringify(steps,null,2));
+}catch(e){console.error(e.message,e.code??'');process.exitCode=1;}finally{await db.close();}
+

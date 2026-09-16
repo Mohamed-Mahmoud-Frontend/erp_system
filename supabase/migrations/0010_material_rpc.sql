@@ -17,16 +17,7 @@ BEGIN
   VALUES (p_material_id, p_supplier_id, p_order_id, p_direction, p_is_return, p_qty)
   RETURNING id INTO v_movement_id;
 
-  -- 2. Update Material Stock Qty
-  IF p_direction = 'in' THEN
-    UPDATE materials
-    SET stock_qty = stock_qty + p_qty
-    WHERE id = p_material_id;
-  ELSIF p_direction = 'out' THEN
-    UPDATE materials
-    SET stock_qty = stock_qty - p_qty
-    WHERE id = p_material_id;
-  END IF;
+  -- The material_movements INSERT trigger owns the stock adjustment.
 
   RETURN v_movement_id;
 END;
