@@ -46,10 +46,10 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full min-w-0">
       {/* Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 items-stretch sm:items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <input
             type="text"
             placeholder="ابحث باسم العامل…"
@@ -61,7 +61,7 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="text-xs text-slate-500 hover:text-slate-800 underline px-1"
+              className="text-xs text-slate-500 hover:text-slate-800 underline px-1 shrink-0"
             >
               مسح
             </button>
@@ -69,11 +69,11 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold self-start sm:self-auto">
+        <div className="flex flex-wrap gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold w-full sm:w-auto overflow-x-auto">
           <button
             type="button"
             onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               filter === "all" ? "bg-white text-blue-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -82,7 +82,7 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
           <button
             type="button"
             onClick={() => setFilter("active")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               filter === "active" ? "bg-white text-emerald-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -91,7 +91,7 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
           <button
             type="button"
             onClick={() => setFilter("stopped")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               filter === "stopped" ? "bg-white text-slate-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -110,8 +110,8 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
       )}
 
       {/* Modern Table Container */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden w-full max-w-full min-w-0">
+        <div className="overflow-x-auto w-full max-w-full">
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-600">
               <tr>

@@ -33,7 +33,7 @@ export default async function SuppliersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -67,8 +67,8 @@ export default async function SuppliersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden w-full max-w-full min-w-0">
+        <div className="overflow-x-auto w-full max-w-full">
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-600">
               <tr>

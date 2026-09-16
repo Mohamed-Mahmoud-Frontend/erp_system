@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "../globals.css";
 import PublicHeader from "./public-header";
@@ -16,6 +16,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function PublicLayout({
   children,
 }: {
@@ -23,6 +29,9 @@ export default function PublicLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      </head>
       <body className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 flex flex-col selection:bg-blue-600 selection:text-white">
         {/* Responsive Mobile-Ready Header */}
         <PublicHeader />

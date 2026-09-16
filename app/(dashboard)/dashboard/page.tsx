@@ -65,7 +65,7 @@ export default async function DashboardHome({
   ].filter((s) => s.show);
 
   return (
-    <div className="dashboard-home space-y-6">
+    <div className="dashboard-home space-y-6 w-full max-w-full min-w-0">
       {/* Page Heading */}
       <div className="page-heading">
         <div>

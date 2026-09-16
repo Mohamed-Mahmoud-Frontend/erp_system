@@ -42,23 +42,23 @@ export default function DashboardCharts({
   const [activeTab, setActiveTab] = useState<"orders" | "inventory" | "finance">("orders");
 
   return (
-    <section className="bg-white border border-slate-200/90 rounded-2xl shadow-xs p-5 sm:p-6 space-y-6">
+    <section className="bg-white border border-slate-200/90 rounded-2xl shadow-xs p-4 sm:p-6 space-y-6 w-full max-w-full min-w-0 overflow-hidden">
       {/* Header & Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-            <h2 className="text-lg font-bold text-slate-900">مؤشرات الأداء ورسوم بيانية تفاعلية</h2>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">مؤشرات الأداء ورسوم بيانية تفاعلية</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">تحليل فوري لحركة الإنتاج، أرصدة المخزون، والتدفقات المالية</p>
         </div>
 
         {/* Tab Controls */}
-        <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80 text-xs font-bold self-start sm:self-auto overflow-x-auto max-w-full">
+        <div className="flex p-1 rounded-xl bg-slate-100 border border-slate-200/80 text-xs font-bold w-full sm:w-auto overflow-x-auto max-w-full">
           <button
             type="button"
             onClick={() => setActiveTab("orders")}
-            className={`px-3.5 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
               activeTab === "orders"
                 ? "bg-white text-blue-700 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
@@ -71,27 +71,27 @@ export default function DashboardCharts({
           <button
             type="button"
             onClick={() => setActiveTab("inventory")}
-            className={`px-3.5 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
               activeTab === "inventory"
                 ? "bg-white text-blue-700 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <UiIcon name="box" />
-            <span>مستويات المخزون ({materialStats?.length ?? 0})</span>
+            <span>المخزون ({materialStats?.length ?? 0})</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("finance")}
-            className={`px-3.5 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
               activeTab === "finance"
                 ? "bg-white text-blue-700 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <UiIcon name="file" />
-            <span>الفواتير والتحصيل</span>
+            <span>الماليات والتحصيل</span>
           </button>
         </div>
       </div>
@@ -126,8 +126,8 @@ export default function DashboardCharts({
           </div>
 
           {/* Visual SVG Progress Bar / Chart */}
-          <div className="p-5 rounded-xl bg-slate-50 border border-slate-100 space-y-4">
-            <div className="flex justify-between items-center text-xs text-slate-600 font-bold">
+          <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-100 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-600 font-bold">
               <span>توزيع دورة التشغيل (إجمالي {orderStats?.total ?? 0} أمر)</span>
               <span>نسبة الإنجاز الكلي: {orderStats?.total ? Math.round(((orderStats.completed + orderStats.delivered) / orderStats.total) * 100) : 0}%</span>
             </div>
@@ -239,14 +239,14 @@ export default function DashboardCharts({
             )}
           </div>
 
-          <div className="flex justify-between items-center pt-2">
-            <div className="flex gap-4 text-xs text-slate-500 font-medium">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-2">
+            <div className="flex flex-wrap gap-2.5 text-xs text-slate-500 font-medium">
               <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> رصيد آمن</span>
-              <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> يقترب من الحد الأدنى</span>
-              <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> حرج (يحتاج توريد)</span>
+              <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> قريب من الحد الأدنى</span>
+              <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> حرج</span>
             </div>
 
-            <Link href="/dashboard/materials" className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1">
+            <Link href="/dashboard/materials" className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 shrink-0">
               <span>جدول الخامات وحركات المخزون</span>
               <UiIcon name="arrow" />
             </Link>

@@ -13,7 +13,18 @@
   --color-primary-700: #0054ac;
 }
 .momayaz-logo { display: block; width: 216px; max-width: 100%; height: auto; object-fit: contain; flex-shrink: 0; }
-.erp-shell { background: #f3f7fb; }
+html, body {
+  overflow-x: clip;
+  max-width: 100vw;
+  width: 100%;
+}
+.erp-shell {
+  background: #f3f7fb;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
 .erp-shell .erp-sidebar {
   width: 272px; padding: 23px 18px 18px; background: linear-gradient(165deg,#0f254a 0%,#03132b 55%,#061c39 100%);
   border-inline-end: 1px solid #153959; box-shadow: -8px 0 32px #03132b08;
@@ -34,14 +45,14 @@
 .erp-shell .sidebar-note { margin-top: 16px; border-color: #95cdf21c; font-size: 12px; color: #d5e6f5; }
 .erp-shell .sidebar-note small { color: #88a9c6; font-size: 10px; }
 .erp-shell .status-dot { background: #00d6ed; }
-.erp-shell .erp-workspace { margin-inline-start: 272px; }
+.erp-shell .erp-workspace { margin-inline-start: 272px; width: calc(100% - 272px); max-width: 100%; min-width: 0; }
 .erp-shell .erp-topbar { height: 80px; background: #ffffffed; border-bottom-color: var(--line); padding-inline: 36px; }
 .erp-shell .topbar-breadcrumb { font-size: 12px; }
 .erp-shell .topbar-breadcrumb strong { color: #183450; }
 .erp-shell .account-avatar { width: 36px; height: 36px; background: #e8f6ff; border-color: #d0eafb; color: #0065ce; border-radius: 12px; }
 .erp-shell .topbar-account button { border: 1px solid var(--line); color: #4c627a; min-height: 36px; padding-inline: 13px; }
 .erp-shell .topbar-brand { display: none; }
-.erp-shell .erp-content { padding: 32px 36px 42px; min-height: calc(100vh - 160px); }
+.erp-shell .erp-content { padding: 32px 36px 42px; min-height: calc(100vh - 160px); width: 100%; max-width: 100%; min-width: 0; }
 .erp-shell .erp-footer { min-height: 80px; padding: 14px 36px; align-items: center; background: #fff; border-color: var(--line); color: #647b91; font-size: 11px; }
 .erp-shell .footer-brand { display: flex; align-items: center; gap: 12px; }
 .erp-shell .footer-brand .momayaz-logo { width: 100px; }
@@ -188,9 +199,20 @@ body:has(.momayaz-login)>main { padding: 0; max-width: none; width: 100%; }
   .erp-shell .brand-motto { display: none; }
 }
 @media(max-width:767px) {
-  .erp-shell { padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
+  .erp-shell { padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)); width: 100%; max-width: 100vw; overflow-x: clip; }
   .erp-shell .erp-sidebar { display: none; }
-  .erp-shell .erp-workspace { margin-inline-start: 0; }
+  .erp-shell .erp-workspace { margin-inline-start: 0; width: 100%; max-width: 100%; min-width: 0; overflow-x: clip; }
+  .erp-shell .erp-content { padding: 14px 10px 24px; width: 100%; max-width: 100%; min-width: 0; }
+  .erp-shell .dashboard-home { width: 100%; max-width: 100%; min-width: 0; }
+  .erp-shell .dashboard-home > * { min-width: 0; max-width: 100%; }
+  .erp-shell .overview-grid { grid-template-columns: 1fr; width: 100%; max-width: 100%; min-width: 0; }
+  .erp-shell .overview-grid > * { min-width: 0; max-width: 100%; }
+  .erp-shell .erp-content .overflow-x-auto {
+    width: 100%;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
   .erp-shell .erp-topbar { height: 68px; padding-inline: 12px; gap: 8px; }
   .erp-shell .mobile-menu {
     display: grid !important;

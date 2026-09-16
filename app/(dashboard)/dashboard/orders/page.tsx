@@ -21,7 +21,7 @@ export default async function OrdersPage() {
   if (error) return <p role="alert" className="p-4 rounded-xl bg-red-50 text-red-700 border border-red-200">تعذر تحميل الطلبات. أعد المحاولة.</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900">الطلبات (أوامر الشغل)</h1>
@@ -37,8 +37,8 @@ export default async function OrdersPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden w-full max-w-full min-w-0">
+        <div className="overflow-x-auto w-full max-w-full">
           <table className="w-full text-right text-sm">
             <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-600">
               <tr>
