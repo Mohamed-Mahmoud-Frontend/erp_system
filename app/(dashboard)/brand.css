@@ -102,10 +102,59 @@
 .erp-shell .erp-content :is(th,td) a { text-underline-offset: 4px; }
 .erp-shell .workspace-state { border-color: var(--line); box-shadow: 0 10px 35px #0f254a06; }
 .erp-shell .state-logo { width: 168px; margin: 0 auto 22px; }
-.erp-shell .mobile-navigation { background: linear-gradient(160deg,#0f254a,#03132b); }
-.erp-shell .mobile-nav-heading { margin-bottom: 18px; }
-.erp-shell .mobile-nav-heading .momayaz-logo { width: 160px; }
-.erp-shell .mobile-nav-heading button { color: #bfe6fa; }
+.erp-shell .mobile-navigation {
+  background: linear-gradient(160deg,#0f254a 0%,#03132b 100%);
+  border: 0;
+  margin: 0;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  inset-block: 0;
+  width: min(340px, 88vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-shadow: -10px 0 35px rgba(3, 19, 43, 0.45);
+}
+.erp-shell .mobile-navigation::backdrop {
+  background: rgba(3, 19, 43, 0.65);
+  backdrop-filter: blur(5px);
+}
+.erp-shell .mobile-navigation[open] {
+  animation: mobileNavSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes mobileNavSlideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.erp-shell .mobile-nav-panel {
+  padding: 22px 18px max(24px, env(safe-area-inset-bottom, 20px));
+}
+.erp-shell .mobile-nav-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.erp-shell .mobile-nav-heading .momayaz-logo { width: 155px; }
+.erp-shell .mobile-nav-heading button {
+  color: #bfe6fa;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.erp-shell .mobile-nav-heading button:hover, .erp-shell .mobile-nav-heading button:active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: scale(1.05);
+}
 .erp-shell .workspace-print-brand { display: none; }
 .erp-shell .document-logo { width: 195px; margin-bottom: 14px; }
 .erp-shell .document-identity { display: flex; flex-direction: column; align-items: flex-start; }
@@ -139,37 +188,81 @@ body:has(.momayaz-login)>main { padding: 0; max-width: none; width: 100%; }
   .erp-shell .brand-motto { display: none; }
 }
 @media(max-width:767px) {
+  .erp-shell { padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
   .erp-shell .erp-sidebar { display: none; }
   .erp-shell .erp-workspace { margin-inline-start: 0; }
-  .erp-shell .erp-topbar { height: 70px; padding-inline: 14px; }
+  .erp-shell .erp-topbar { height: 68px; padding-inline: 12px; gap: 8px; }
+  .erp-shell .mobile-menu {
+    display: grid !important;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: #173550;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(15, 37, 74, 0.05);
+    transition: all 0.15s ease;
+  }
+  .erp-shell .mobile-menu:active {
+    background: #f0f6fc;
+    transform: scale(0.96);
+  }
+  .erp-shell .topbar-title { gap: 8px; }
   .erp-shell .topbar-brand { display: block; }
-  .erp-shell .topbar-brand .momayaz-logo { width: 110px; }
+  .erp-shell .topbar-brand .momayaz-logo { width: 100px; max-height: 36px; }
   .erp-shell .topbar-breadcrumb { display: none; }
-  .erp-shell .erp-content { padding: 24px 16px 30px; }
-  .erp-shell .welcome-panel { padding: 25px; min-height: 235px; border-radius: 18px; }
-  .erp-shell .welcome-panel h2 { font-size: 26px; }
-  .erp-shell .welcome-panel p { font-size: 12px; }
+  .erp-shell .topbar-account { gap: 6px; }
+  .erp-shell .topbar-account button {
+    font-size: 11px;
+    min-height: 36px;
+    padding-inline: 10px;
+    border-radius: 9px;
+    white-space: nowrap;
+  }
+  .erp-shell .account-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+  .erp-shell .erp-content { padding: 18px 12px 28px; }
+  .erp-shell .welcome-panel { padding: 22px 18px; min-height: 220px; border-radius: 18px; }
+  .erp-shell .welcome-panel h2 { font-size: 23px; line-height: 1.5; }
+  .erp-shell .welcome-panel p { font-size: 12px; line-height: 1.8; }
   .erp-shell .welcome-panel::before { inset-inline-end: -170px; opacity: .55; }
   .erp-shell .factory-emblem { display: none; }
-  .erp-shell .metric-card { padding: 18px 16px; }
+  .erp-shell .metric-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .erp-shell .metric-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .erp-shell .metric-card { padding: 16px 14px; }
   .erp-shell .metric-card p { font-size: 11px; }
-  .erp-shell .metric-card>strong { font-size: 29px; }
+  .erp-shell .metric-card>strong { font-size: 26px; }
   .erp-shell .metric-card small { font-size: 10px; }
-  .erp-shell .metric-icon { width: 28px; height: 28px; inset-inline-end: 13px; top: 16px; border-radius: 9px; }
-  .erp-shell .metric-icon svg { width: 17px; }
-  .erp-shell .shortcut-card { padding: 18px; }
-  .erp-shell .erp-footer { padding: 14px 16px; }
-  .erp-shell .footer-brand { gap: 4px; font-size: 10px; }
+  .erp-shell .metric-icon { width: 28px; height: 28px; inset-inline-end: 12px; top: 14px; border-radius: 9px; }
+  .erp-shell .metric-icon svg { width: 16px; }
+  .erp-shell .shortcut-grid { grid-template-columns: 1fr; gap: 10px; }
+  .erp-shell .shortcut-card { padding: 16px; }
+  .erp-shell .erp-footer { padding: 14px 12px; gap: 8px; flex-direction: column; text-align: center; }
+  .erp-shell .footer-brand { gap: 6px; font-size: 10px; justify-content: center; }
   .erp-shell .footer-brand .momayaz-logo { width: 85px; }
+  .erp-shell .erp-content :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea) {
+    font-size: 16px !important;
+    min-height: 46px;
+  }
+  .erp-shell .erp-content table { min-width: 540px; }
+  .erp-shell .erp-content th { padding: 12px 10px; font-size: 11px; }
+  .erp-shell .erp-content td { padding: 12px 10px; font-size: 12px; }
   .momayaz-login { display: block; background: #f7fafd; }
-  .momayaz-login .login-story { min-height: auto; padding: 20px 26px 32px; gap: 15px; }
-  .momayaz-login .login-brand .momayaz-logo { width: 210px; margin-inline-start: -23px; }
-  .momayaz-login .login-story h1 { font-size: 29px; margin-block: 8px; }
+  .momayaz-login .login-story { min-height: auto; padding: 24px 20px 30px; gap: 16px; }
+  .momayaz-login .login-brand .momayaz-logo { width: 200px; margin-inline-start: -20px; }
+  .momayaz-login .login-story h1 { font-size: 26px; margin-block: 8px; }
   .momayaz-login .login-story h1+p { font-size: 12px; }
   .momayaz-login .login-story-footer, .momayaz-login .login-features { display: none; }
-  .momayaz-login .login-form-panel { padding: 24px 16px 36px; }
-  .momayaz-login .login-form-inner { padding: 27px 23px; max-width: 440px; }
-  .momayaz-login .login-form-logo { width: 155px; margin-bottom: 20px; }
+  .momayaz-login .login-form-panel { padding: 20px 14px 34px; }
+  .momayaz-login .login-form-inner { padding: 24px 18px; max-width: 440px; }
+  .momayaz-login .login-form-logo { width: 145px; margin-bottom: 18px; }
 }
 @media print {
   .erp-shell { background: white; color: #112846; }

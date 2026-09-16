@@ -50,6 +50,16 @@ body {
   font-feature-settings: "kern" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* ── RTL utilities ─────────────────────────────────────────────────────── */

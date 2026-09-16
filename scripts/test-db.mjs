@@ -1,4 +1,4 @@
-﻿import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 
 // PostgreSQL in WASM; isolated from the linked factory database.
@@ -15,6 +15,7 @@ export async function createTestDb() {
     GRANT USAGE ON SCHEMA public, auth TO anon, authenticated;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO service_role;
+    SET timezone TO 'Africa/Cairo';
   `);
   const migrations = (await readdir('supabase/migrations')).filter(f => f.endsWith('.sql')).sort();
   for (const file of migrations) {
@@ -23,6 +24,6 @@ export async function createTestDb() {
     await db.exec(sql.replace(/create extension if not exists "pgcrypto";/i, ''));
   }
   // Legacy business suites exercise business rules as an explicitly provisioned test administrator.
-  await db.exec("INSERT INTO auth.users(id,email) VALUES ('10000000-0000-4000-8000-000000000099','isolated-admin@example.com'); INSERT INTO user_access(user_id,email,role) VALUES('10000000-0000-4000-8000-000000000099','isolated-admin@example.com','admin'); SELECT set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000099',false);");
+  await db.exec("SET timezone TO 'Africa/Cairo'; INSERT INTO auth.users(id,email) VALUES ('10000000-0000-4000-8000-000000000099','isolated-admin@example.com'); INSERT INTO user_access(user_id,email,role) VALUES('10000000-0000-4000-8000-000000000099','isolated-admin@example.com','admin'); SELECT set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000099',false);");
   return db;
 }
