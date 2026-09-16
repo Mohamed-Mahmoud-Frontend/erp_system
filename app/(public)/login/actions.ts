@@ -43,6 +43,7 @@ export async function loginAction(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    console.error("Supabase sign-in failed:", error.status, error.name, error.message);
     return { error: ar.auth.invalidCredentials };
   }
 
