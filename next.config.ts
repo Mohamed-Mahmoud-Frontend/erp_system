@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  deploymentId: process.env.NEXT_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA,
+  deploymentId: (process.env.NEXT_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA)?.slice(0, 16),
   outputFileTracingExcludes: { "/*": ["./.private/**/*", "./.backups/**/*", "./.tools/**/*", "./audit/**/*", "./deliverables/**/*"] },
   images: {
     remotePatterns: [
