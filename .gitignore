@@ -47,7 +47,8 @@ next-env.d.ts
 # Generated reviews and operational evidence remain local.
 /audit/
 /deliverables/*.html
-/deliverables/*preview.png
+/deliverables/*preview*.png
+/deliverables/preview-*.png
 /supabase/.temp/
 /supabase/.branches/
 !.env.example
