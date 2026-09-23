@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import TankScene from "../tank-scene";
+import UiIcon from "../(dashboard)/ui-icon";
 
 export const metadata: Metadata = {
   title: "الرئيسية | مصنع خزانات المياه وحلول التخزين",
@@ -55,64 +57,29 @@ const products = [
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white pt-12 sm:pt-16 pb-20 sm:pb-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50/80 via-white to-slate-50/50" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Trust badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs sm:text-sm font-bold mb-6 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              <span>خامات بولي إيثيلين نقية 100% · ضمان استبدال 10 سنوات</span>
+    <div className="public-home flex flex-col min-h-screen">
+      <section className="public-hero">
+        <div className="public-hero-grid">
+          <div className="public-hero-copy">
+            <span className="public-kicker"><span /> مميز · حلول تخزين المياه</span>
+            <h1>جودة تعيش.<br />ومياه <span>تفضل نقية.</span></h1>
+            <p>خزانات بولي إيثيلين متعددة الطبقات، مصممة لحماية مياهك وتلبية احتياجات بيتك ومشروعك. عناية بكل تفصيلة، من التصنيع للتسليم.</p>
+            <div className="public-hero-actions">
+              <Link href="/quote" className="public-primary">اطلب عرض سعر <UiIcon name="arrow" /></Link>
+              <Link href="#products" className="public-secondary">اكتشف منتجاتنا <UiIcon name="box" /></Link>
             </div>
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-snug mb-5">
-              خزانات مياه تعيش معاك{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500">
-                العمر كله
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
-              نصنع خزانات البولي إيثيلين بأحدث تقنيات القولبة الدورانية والمواصفات المعتمدة صحياً. أمان تام لمياه الشرب، حماية ثلاثية من البكتيريا والطحالب، وعزل حراري متين.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-              <Link
-                href="/quote"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 sm:py-4 text-base sm:text-lg font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/25 transition-all transform hover:-translate-y-0.5 active:scale-95"
-              >
-                اطلب عرض سعر الآن
-              </Link>
-              <Link
-                href="#products"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 sm:py-4 text-base sm:text-lg font-bold rounded-full text-slate-700 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95"
-              >
-                تصفح الكتالوج والأسعار
-              </Link>
-            </div>
-
-            {/* Quick Stats Banner */}
-            <div className="mt-14 sm:mt-16 pt-8 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              <div className="p-3">
-                <strong className="block text-2xl sm:text-3xl font-black text-slate-900 font-mono">15+</strong>
-                <span className="text-xs sm:text-sm text-slate-500 font-medium">سنة خبرة صناعية</span>
-              </div>
-              <div className="p-3">
-                <strong className="block text-2xl sm:text-3xl font-black text-blue-600 font-mono">+10,000</strong>
-                <span className="text-xs sm:text-sm text-slate-500 font-medium">خزان مُورد بنجاح</span>
-              </div>
-              <div className="p-3">
-                <strong className="block text-2xl sm:text-3xl font-black text-slate-900 font-mono">10</strong>
-                <span className="text-xs sm:text-sm text-slate-500 font-medium">سنوات ضمان شامل</span>
-              </div>
-              <div className="p-3">
-                <strong className="block text-2xl sm:text-3xl font-black text-cyan-600 font-mono">100%</strong>
-                <span className="text-xs sm:text-sm text-slate-500 font-medium">أمان لمياه الشرب</span>
-              </div>
+            <div className="public-hero-details">
+              <span><UiIcon name="check" /> ضمان 10 سنوات</span>
+              <span><UiIcon name="box" /> سعات تناسب احتياجك</span>
             </div>
           </div>
+          <div className="public-hero-art"><TankScene /><span className="public-art-note">تصوّر توضيحي لمنتجات مميز</span></div>
+        </div>
+        <div className="public-stats">
+          <div><strong dir="ltr">15+</strong><span>سنة خبرة صناعية</span></div>
+          <div><strong dir="ltr">10,000+</strong><span>خزان مُورد بنجاح</span></div>
+          <div><strong>10</strong><span>سنوات ضمان</span></div>
+          <div><strong dir="ltr">500 – 5,000</strong><span>لتر · سعات متنوعة</span></div>
         </div>
       </section>
 
@@ -134,28 +101,28 @@ export default function LandingPage() {
               {
                 title: "آمنة صحياً 100%",
                 desc: "مصنوعة من حبيبات بلاستيك بولي إيثيلين نقية عذراء (Virgin Food-Grade) معتمدة دولياً ومحلياً لحفظ مياه الشرب والأغذية.",
-                icon: "💧",
+                icon: "box",
                 highlight: "معتمد لمياه الشرب",
               },
               {
                 title: "حماية متعددة الطبقات ضد الطحالب",
                 desc: "طبقات متخصصة تمنع نفاذ الأشعة فوق البنفسجية UV تماماً، مما يمنع نمو البكتيريا والطحالب الخضراء نهائياً داخل الخزان.",
-                icon: "🛡️",
+                icon: "check",
                 highlight: "عزل كامل للأشعة",
               },
               {
                 title: "ضمان استبدال حقيقي 10 سنوات",
                 desc: "نثق في كفاءة خطوط إنتاجنا وخاماتنا عالية الكثافة، لذلك نقدم شهادة ضمان استبدال معتمدة ضد أي عيوب تصنيع.",
-                icon: "⭐",
+                icon: "settings",
                 highlight: "شهادة ضمان موثقة",
               },
             ].map((feature, idx) => (
               <div
                 key={idx}
-                className="bg-white p-7 sm:p-8 rounded-2xl shadow-xs border border-slate-200/80 hover:shadow-md hover:border-blue-300 transition-all group"
+                className="public-feature bg-white p-7 sm:p-8 rounded-2xl shadow-xs border border-slate-200/80 hover:shadow-md hover:border-blue-300 transition-all group"
               >
                 <div className="w-14 h-14 rounded-2xl bg-blue-50 text-3xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  {feature.icon}
+                  <UiIcon name={feature.icon} />
                 </div>
                 <span className="inline-block text-xs font-bold text-blue-600 bg-blue-50/70 px-2.5 py-1 rounded-md mb-3">
                   {feature.highlight}
@@ -185,7 +152,7 @@ export default function LandingPage() {
             {products.map((product) => (
               <div
                 key={product.id}
-                className={`relative bg-white rounded-2xl p-6 border transition-all flex flex-col justify-between ${
+                className={`public-product relative bg-white rounded-2xl p-6 border transition-all flex flex-col justify-between ${
                   product.popular
                     ? "border-blue-500 shadow-md ring-2 ring-blue-500/20"
                     : "border-slate-200 hover:border-blue-300 hover:shadow-md"
@@ -198,12 +165,9 @@ export default function LandingPage() {
                 )}
 
                 <div>
-                  {/* Visual container */}
-                  <div className="aspect-4/3 w-full bg-slate-50 rounded-xl mb-5 flex flex-col items-center justify-center p-4 border border-slate-100">
-                    <span className="text-5xl mb-2">🛢️</span>
-                    <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2.5 py-1 rounded-md border border-slate-200">
-                      {product.capacity}
-                    </span>
+                  <div className="public-product-art">
+                    <TankScene compact />
+                    <span dir="ltr">{product.capacity}</span>
                   </div>
 
                   <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md inline-block mb-2">

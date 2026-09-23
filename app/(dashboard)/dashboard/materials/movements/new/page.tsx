@@ -1,3 +1,4 @@
+import { cairoToday } from "@/lib/payroll";
 import { requirePermission } from "@/lib/access";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -33,7 +34,7 @@ export default async function NewMovementPage() {
         </Link>
       </div>
 
-      <MovementForm materials={materials || []} suppliers={suppliers || []} />
+      <MovementForm materials={materials || []} suppliers={suppliers || []} today={cairoToday()} />
     </div>
   );
 }

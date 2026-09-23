@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getAccess, allowed } from '@/lib/access';
 import { createClient } from '@/lib/supabase/server';
 import UiIcon from '../ui-icon';
-import BrandLogo from '../brand-logo';
+import TankScene from '../../tank-scene';
 import DashboardCharts, { type OrderStats, type InvoiceStats } from './dashboard-charts';
 
 export default async function DashboardHome({
@@ -65,7 +65,7 @@ export default async function DashboardHome({
   ].filter((s) => s.show);
 
   return (
-    <div className="dashboard-home space-y-6 w-full max-w-full min-w-0">
+    <div className="dashboard-home w-full max-w-full min-w-0">
       {/* Page Heading */}
       <div className="page-heading">
         <div>
@@ -73,7 +73,7 @@ export default async function DashboardHome({
           <h1>نظرة عامة على المصنع</h1>
           <p>تابع تفاصيل الإنتاج، المخزون، والماليات من مكان واحد.</p>
         </div>
-        <span className="date-chip">
+        <span className="date-chip"><UiIcon name="clock" />
           {new Intl.DateTimeFormat('ar-EG', { dateStyle: 'full', timeZone: 'Africa/Cairo' }).format(new Date())}
         </span>
       </div>
@@ -86,21 +86,18 @@ export default async function DashboardHome({
 
       {/* Welcome Banner */}
       <section className="welcome-panel">
-        <div>
+        <div className="welcome-copy">
           <span className="welcome-tag">
             <span className="status-dot" />
             لوحة إدارة المصنع
           </span>
-          <h2>يوم عمل منظّم،<br />وقرارات أوضح.</h2>
+          <h2>كل تفاصيل مصنعك.<br /><span>في إيدك.</span></h2>
           <p>من طلب العميل إلى حركة المخزون، وصول أسرع لأقسامك ومتابعة أبسط لأعمالك.</p>
           <Link href="/dashboard/account" className="welcome-link">
             إدارة حسابك <UiIcon name="arrow" />
           </Link>
         </div>
-        <div className="factory-emblem" aria-hidden="true">
-          <BrandLogo eager />
-          <small dir="ltr">SMART SOLUTIONS<br />FOR A BRIGHTER TOMORROW</small>
-        </div>
+        <div className="welcome-art"><TankScene /></div>
       </section>
 
       {access.role === 'employee' && access.permissions.length === 0 && (

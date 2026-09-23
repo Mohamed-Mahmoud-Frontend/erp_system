@@ -1,0 +1,71 @@
+
+/* Public-facing extension of the Momayaz dimensional visual identity. */
+.public-site { background: #f4f7fb; color: #172e47; }
+.public-site>header { background: #ffffffeb; border-bottom-color: #dfe8f2; box-shadow: 0 5px 25px #163e5b08; }
+.public-site>header a.bg-blue-600 { border-radius: 12px; background: linear-gradient(145deg,#228cf0,#1468ce); border-top: 1px solid #65b5ff; border-bottom: 3px solid #1053a7; box-shadow: 0 5px 12px #176ed32b; }
+.public-hero { position: relative; overflow: hidden; background: radial-gradient(ellipse at 15% 35%,#18547b66,transparent 55%),linear-gradient(120deg,#122d4b,#091b31 70%); color: white; padding: 68px max(24px,calc((100% - 1180px)/2)) 0; isolation: isolate; }
+.public-hero::before { content: ''; position: absolute; z-index: -1; width: 750px; height: 750px; border: 1px solid #93d5ff16; border-radius: 50%; top: -330px; left: -180px; box-shadow: 0 0 0 70px #a6dfff03,0 0 0 140px #a6dfff03; }
+.public-hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 50px; max-width: 1180px; margin-inline: auto; }
+.public-kicker { display: inline-flex; align-items: center; gap: 9px; color: #b7e3fb; border: 1px solid #9bdeff2a; background: #7fc9ff08; font-size: 11px; font-weight: 700; padding: 7px 13px; border-radius: 100px; }
+.public-kicker>span { width: 6px; height: 6px; background: #58d9f2; border-radius: 50%; box-shadow: 0 0 12px #58d9f255; }
+.public-hero h1 { font-size: clamp(38px,4.3vw,64px); line-height: 1.55; font-weight: 900; letter-spacing: -1.8px; margin-block: 20px; }
+.public-hero h1 span { color: #7ee2ff; }
+.public-hero-copy>p { color: #b9cfe2; font-size: 14px; line-height: 2.1; max-width: 490px; }
+.public-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.public-primary,.public-secondary { display: inline-flex; justify-content: center; align-items: center; gap: 20px; min-height: 48px; padding: 11px 23px; border-radius: 12px; font-size: 13px; font-weight: 750; transition: transform .2s,background-color .2s; }
+.public-primary { color: #123d61; background: linear-gradient(145deg,#fff,#d9edfa); border: 1px solid white; border-bottom: 3px solid #adcdde; box-shadow: 0 6px 18px #0002; }
+.public-secondary { color: #d4e7f6; background: #ffffff06; border: 1px solid #9acbec40; }
+.public-primary:hover,.public-secondary:hover { transform: translateY(-2px); }
+.public-hero-details { display: flex; flex-wrap: wrap; gap: 22px; color: #a6c1d9; margin-top: 24px; font-size: 11px; }
+.public-hero-details>span { display: flex; align-items: center; gap: 7px; }
+.public-hero-details svg { width: 15px; color: #6fdbe9; }
+.public-hero-art { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
+.public-hero-art>div { transform: scale(1.15); }
+.public-art-note { color: #88a8c4; font-size: 10px; margin-top: 40px; }
+.public-stats { max-width: 1180px; margin: 60px auto 0; padding-block: 26px; border-top: 1px solid #aacfee22; display: grid; grid-template-columns: repeat(4,1fr); }
+.public-stats>div { display: flex; flex-direction: column; gap: 4px; align-items: center; border-inline-end: 1px solid #aacfee22; }
+.public-stats>div:last-child { border: 0; }
+.public-stats strong { font-size: 25px; font-weight: 800; font-variant-numeric: tabular-nums; color: #e7f5ff; }
+.public-stats span { font-size: 11px; color: #a3bfd7; }
+.public-home .public-feature { border: 1px solid #e0e8f1; border-bottom: 3px solid #dbe5f0; border-radius: 22px; box-shadow: 0 15px 30px -20px #153f6950; }
+.public-feature>div:first-child { background: linear-gradient(145deg,#f0faff,#d0e8fc); border: 1px solid white; box-shadow: 0 4px 0 #b9d6eb,0 8px 15px #175c9514; transform: rotate(-5deg); color: #287abe; }
+.public-feature>div:first-child svg { width: 27px; height: 27px; }
+.public-home #products { background: #f4f7fb; }
+.public-home .public-product { border-radius: 23px; border-bottom-width: 3px; box-shadow: 0 12px 28px -18px #1643683d; padding: 20px; }
+.public-product-art { position: relative; min-height: 210px; border-radius: 16px; margin-bottom: 22px; background: radial-gradient(ellipse at 50% 35%,#225477,#102840); overflow: hidden; border: 1px solid #294b68; }
+.public-product-art>span { position: absolute; left: 10px; bottom: 10px; font: 10px sans-serif; letter-spacing: 1px; color: #dbf0ff; padding: 5px 9px; border: 1px solid #98d7ff40; background: #082337c9; border-radius: 7px; }
+.public-home #about { background: radial-gradient(ellipse at 90% 30%,#173957,transparent 60%),#0b1c31; }
+.public-site>main :where(input:not([type=radio]):not([type=checkbox]),select,textarea) { border-radius: 12px; }
+.public-site>main :where(.bg-white.rounded-2xl) { box-shadow: 0 12px 35px -22px #153c6450; }
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .public-home .public-product { transition: transform .25s,box-shadow .25s; }
+  .public-home .public-product:hover { transform: translateY(-5px); box-shadow: 0 18px 35px -18px #16436855; }
+}
+@media(max-width:1100px) {
+  .public-hero-grid { gap: 20px; }
+  .public-hero-art>div { transform: scale(.92); }
+  .public-hero { padding-top: 48px; }
+}
+@media(max-width:767px) {
+  .public-hero { padding: 35px 22px 0; }
+  .public-hero-grid { grid-template-columns: 1fr; gap: 10px; }
+  .public-hero h1 { font-size: 41px; letter-spacing: -1px; margin-block: 16px; }
+  .public-hero-copy>p { font-size: 13px; }
+  .public-hero-actions { gap: 10px; margin-top: 23px; }
+  .public-primary,.public-secondary { padding: 10px 15px; font-size: 12px; gap: 12px; flex: 1; }
+  .public-hero-details { gap: 15px; font-size: 10px; }
+  .public-hero-art { min-height: 290px; margin-top: 20px; }
+  .public-hero-art>div { transform: none; }
+  .public-art-note { margin-top: 17px; font-size: 9px; }
+  .public-stats { grid-template-columns: repeat(2,1fr); margin-top: 26px; gap: 22px 0; padding-block: 25px; }
+  .public-stats>div:nth-child(2) { border: 0; }
+  .public-stats strong { font-size: 23px; }
+  .public-stats span { font-size: 10px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-primary:hover,.public-secondary:hover { transform: none; }
+}
+@media print {
+  .public-hero { background: white; color: #172e47; }
+  .public-hero-art { display: none; }
+}

@@ -35,6 +35,30 @@ export default function DashboardShell({children, links, email, signOut}: {
     return () => window.removeEventListener('keydown', shortcut);
   }, []);
 
+  useEffect(() => {
+    let drag: {element: HTMLElement; x: number; left: number} | null = null;
+    const down = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      const target = event.target as HTMLElement;
+      if (target.closest('a,button,input,select,textarea,label')) return;
+      const element = target.closest<HTMLElement>('.erp-content .overflow-x-auto');
+      if (!element || element.scrollWidth <= element.clientWidth) return;
+      drag = {element, x: event.clientX, left: element.scrollLeft};
+      element.classList.add('table-dragging');
+    };
+    const move = (event: PointerEvent) => {
+      if (!drag) return;
+      if (Math.abs(event.clientX - drag.x) < 3) return;
+      event.preventDefault();
+      drag.element.scrollLeft = drag.left - (event.clientX - drag.x);
+    };
+    const up = () => { drag?.element.classList.remove('table-dragging'); drag = null; };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+    document.addEventListener('pointercancel', up);
+    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); };
+  }, []);
   function closeMenu() {
     dialogRef.current?.close();
     setQuery('');
@@ -63,7 +87,7 @@ export default function DashboardShell({children, links, email, signOut}: {
       </Link>
       <label className="nav-search"><UiIcon name="search"/>
         <input ref={searchRef} aria-label="بحث في الأقسام" placeholder="ابحث عن قسم…" value={query} onChange={e => setQuery(e.target.value)}/>
-        <kbd dir="ltr">⌘ K</kbd>
+        <kbd dir="ltr">Ctrl K</kbd>
       </label>
       <div className="sidebar-navigation">{navigation}</div>
       <div className="sidebar-note"><span className="status-dot"/>مساحة عمل المصنع<small>كل تفاصيل العمل، في مكان واحد</small></div>
@@ -74,9 +98,11 @@ export default function DashboardShell({children, links, email, signOut}: {
           <button ref={menuRef} type="button" className="mobile-menu" aria-haspopup="dialog" aria-controls="mobile-navigation"
             aria-label="فتح القائمة" onClick={() => dialogRef.current?.showModal()}><UiIcon name="menu"/></button>
           <Link className="topbar-brand" href="/dashboard" aria-label="مميز · لوحة التحكم"><BrandLogo eager /></Link>
+          <span className="topbar-section-icon"><UiIcon name={current?.icon || "grid"} /></span>
           <span className="topbar-breadcrumb"><Link href="/dashboard">مساحة العمل</Link><span>/</span><strong>{current?.label || 'تفاصيل القسم'}</strong></span>
         </div>
         <div className="topbar-account">
+          <span className="workspace-chip"><span className="status-dot" />مساحة المصنع</span>
           <Link href="/dashboard/account" className="account-link" aria-label="إعدادات حسابي">
             <span className="account-avatar">{email.slice(0, 1).toUpperCase()}</span>
             <span className="account-email" dir="ltr">{email}</span>

@@ -1,0 +1,20 @@
+"use client";
+import {useActionState,useState} from "react";
+import {saveQuotation} from "./actions";
+import {quotationTotals,type QuotationItems} from "@/lib/quotations/items";
+type Product=QuotationItems["products"][number]&{key:number};
+export default function QuotationEditor({quotation}:{quotation:{id:string;guest_name:string|null;guest_phone:string|null;details:string|null;status:string;parsed_items:QuotationItems}}){
+ const [state,action,pending]=useActionState(saveQuotation,undefined);
+ const [products,setProducts]=useState<Product[]>(quotation.parsed_items.products.map((p,i)=>({...p,key:i})));
+ const [transport,setTransport]=useState(quotation.parsed_items.transportation_cost);
+ const totals=quotationTotals({products,transportation_cost:transport});
+ const update=(key:number,patch:Partial<Product>)=>setProducts(old=>old.map(p=>p.key===key?{...p,...patch}:p));
+ return <form action={action} className="space-y-5 rounded-xl border bg-white p-6"><input type="hidden" name="id" value={quotation.id}/><h2 className="text-xl font-bold">تعديل عرض السعر</h2>
+ <div className="grid gap-4 sm:grid-cols-2"><label>اسم العميل<input required name="guest_name" defaultValue={quotation.guest_name??""} className="mt-1 w-full rounded border p-2"/></label><label>الهاتف<input name="guest_phone" defaultValue={quotation.guest_phone??""} className="mt-1 w-full rounded border p-2"/></label></div>
+ <label className="block">تفاصيل الطلب<textarea name="details" defaultValue={quotation.details??""} rows={3} className="mt-1 w-full rounded border p-2"/></label>
+ <label className="block">الحالة<select name="status" defaultValue={quotation.status} className="mt-1 w-full rounded border p-2"><option value="draft">مسودة</option><option value="sent">تم الإرسال</option><option value="approved">موافق عليه</option><option value="rejected">مرفوض</option></select></label>
+ <div className="flex items-center justify-between"><h3 className="font-bold">البنود</h3><button type="button" className="rounded border px-3 py-2" onClick={()=>setProducts(old=>[...old,{key:Date.now(),capacity:"",quantity:1,price:0,material:"بولي إيثيلين درجة أولى بيور"}])}>إضافة بند</button></div>
+ <div className="space-y-3">{products.map(p=><div key={p.key} className="grid gap-2 rounded border p-3 sm:grid-cols-[2fr_1fr_1fr_2fr_auto]"><label>السعة<input required name="capacity[]" value={p.capacity} onChange={e=>update(p.key,{capacity:e.target.value})} className="w-full rounded border p-2"/></label><label>الكمية<input required type="number" min="1" step="1" name="quantity[]" value={p.quantity} onChange={e=>update(p.key,{quantity:Number(e.target.value)})} className="w-full rounded border p-2"/></label><label>سعر الوحدة<input required type="number" min="0" step="0.01" name="price[]" value={p.price} onChange={e=>update(p.key,{price:Number(e.target.value)})} className="w-full rounded border p-2"/></label><label>الخامة<input required name="material[]" value={p.material} onChange={e=>update(p.key,{material:e.target.value})} className="w-full rounded border p-2"/></label><button type="button" disabled={products.length===1} onClick={()=>setProducts(old=>old.filter(item=>item.key!==p.key))} className="self-end rounded border px-3 py-2 text-red-700 disabled:opacity-40">حذف</button></div>)}</div>
+ <label className="block">تكلفة النقل<input type="number" min="0" step="0.01" name="transportation_cost" value={transport} onChange={e=>setTransport(Number(e.target.value))} className="mt-1 w-full rounded border p-2"/></label>
+ <p className="text-lg font-bold">الإجمالي: {totals.grandTotal.toLocaleString("ar-EG")} ج.م</p>{state?.message&&<p role={state.success?"status":"alert"} className={state.success?"text-green-700":"text-red-700"}>{state.message}</p>}<button disabled={pending} className="rounded bg-blue-700 px-5 py-2 text-white">{pending?"جارٍ الحفظ…":"حفظ التعديلات"}</button></form>;
+}

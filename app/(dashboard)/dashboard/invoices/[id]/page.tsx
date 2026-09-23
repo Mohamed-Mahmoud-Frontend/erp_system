@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Decimal from "decimal.js";
 import { createClient } from "@/lib/supabase/server";
 import { balanceLabel, isOverdue, money } from "@/lib/billing";
+import {invoiceLineSchema} from "@/lib/invoices/items";
+import {z} from "zod";
 import PaymentForm from "./payment-form";
 import CorrectionForm from "../../corrections/form";
 import ReturnForm from "./return-form";
@@ -17,7 +19,11 @@ export default async function InvoiceDetailsPage({ params }: { params: Promise<{
   const { data: invoice, error } = await supabase.from("invoice_balances").select("*").eq("id", id).maybeSingle();
   if (error) return <p role="alert" className="p-6 text-red-700">تعذر تحميل الفاتورة. أعد المحاولة.</p>;
   if (!invoice) notFound();
-  const { data: history, error: historyError } = await supabase.from("invoices").select("payments(*,cheques(*)),sales_returns(*)").eq("id", id).single();
+  const { data: history, error: historyError } = await supabase.from("invoices").select("line_items,shipping_amount,discount_amount,notes,payments(*,cheques(*)),sales_returns(*)").eq("id", id).single();
+  const {data:order,error:orderError}=await supabase.from("orders").select("product_spec").eq("id",invoice.order_id).maybeSingle();
+  const items=Array.isArray(order?.product_spec)?order.product_spec.filter((item):item is {capacity:string;quantity:number}=>typeof item==="object"&&item!==null&&"capacity" in item&&"quantity" in item&&typeof item.capacity==="string"&&typeof item.quantity==="number"):[];
+  const priced=z.array(invoiceLineSchema).safeParse(history?.line_items);
+  const displayItems=priced.success&&priced.data.length?priced.data:items.map(item=>({...item,unit_price:null}));
   const overdue = isOverdue(invoice.due_date, invoice.balance_due);
   const status = invoice.balance_due < 0 ? "رصيد دائن للعميل" : invoice.balance_due === 0 ? "مسددة / مسواة" : overdue ? "متأخرة السداد" : "مستحقة السداد";
   return <div className="max-w-6xl mx-auto space-y-6">
@@ -33,6 +39,9 @@ export default async function InvoiceDetailsPage({ params }: { params: Promise<{
         </dl>
         <div className="border-t pt-4 space-y-2"><p>الإجمالي: {money(invoice.total)} ج.م</p><p>المدفوع المحتسب: {money(invoice.paid_amount)} ج.م</p><p>مرتجعات البيع: {money(invoice.returned_amount)} ج.م</p>
           <p data-testid="invoice-balance" className="text-2xl font-bold">الرصيد: {balanceLabel(invoice.balance_due)}</p></div>
+      </section>
+      <section className="bg-white border rounded-xl p-6 space-y-3"><h2 className="font-bold text-lg">بنود الفاتورة</h2>{orderError?<p role="alert">تعذر تحميل بنود أمر الشغل.</p>:displayItems.length?<div className="overflow-x-auto"><table className="w-full text-right"><thead><tr><th className="p-3">البند / السعة</th><th className="p-3">الكمية</th><th className="p-3">سعر الوحدة</th><th className="p-3">إجمالي البند</th></tr></thead><tbody>{displayItems.map((item,index)=><tr key={index} className="border-t"><td className="p-3">{item.capacity}</td><td className="p-3">{item.quantity}</td><td className="p-3">{item.unit_price!==null?`${money(item.unit_price)} ج.م`:"—"}</td><td className="p-3">{item.unit_price!==null?`${money(new Decimal(item.unit_price).times(item.quantity))} ج.م`:"—"}</td></tr>)}</tbody></table></div>:<p>لم تُسجل بنود تفصيلية لهذا الأمر؛ الكمية الإجمالية {invoice.quantity} خزان.</p>}
+       {history&&!historyError&&<div className="border-t pt-3 text-sm"><p>النقل والمصاريف: {money(history.shipping_amount)} ج.م — الخصم: {money(history.discount_amount)} ج.م</p>{history.notes&&<p className="mt-2">ملاحظات: {history.notes}</p>}</div>}
       </section>
       {historyError ? <p role="alert" className="p-6 text-red-700">تعذر تحميل المدفوعات والمرتجعات. أعد المحاولة.</p> : <>
         <section className="bg-white border rounded-xl p-6 space-y-4"><h2 className="font-bold text-lg">سجل المدفوعات</h2>

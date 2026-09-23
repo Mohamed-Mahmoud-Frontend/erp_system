@@ -1,4 +1,5 @@
 import { z } from "zod";
+import Decimal from "decimal.js";
 
 export const materialSchema = z.object({
   type: z.string().min(2, "نوع المادة يجب أن يكون أكثر من حرفين"),
@@ -27,5 +28,5 @@ export const supplierSchema = z.object({
 export type SupplierFormValues = z.infer<typeof supplierSchema>;
 
 export const supplierTransactionSchema = z.object({
- supplier_id: z.uuid(), type:z.enum(['invoice','payment']), amount:z.coerce.number().finite().positive(),
+ supplier_id: z.uuid(), type:z.enum(['invoice','payment']), amount:z.coerce.number().finite().positive().refine(n=>new Decimal(n).decimalPlaces()<=2), reference:z.string().trim().max(100), description:z.string().trim().max(2000), occurred_on:z.iso.date(),
 });

@@ -24,6 +24,7 @@ export default async function CreateInvoicePage() {
     .select(`
       id,
       quantity,
+      product_spec,
       created_at,
       clients (
         name,

@@ -1,0 +1,294 @@
+@import "@fontsource/aref-ruqaa-ink/700.css";
+
+
+        .polytex-quotation {
+            --brand: #1e3a8a;
+            --brand-soft: #eff6ff;
+            --accent: #0f766e;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --line: #dbe5f1;
+            --paper: #ffffff;
+            --bg: #eef3f8;
+        }
+
+        .polytex-quotation * { box-sizing: border-box; }
+
+        .polytex-quotation {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl !important;
+            text-align: right !important;
+            background:
+                radial-gradient(circle at top right, rgba(30, 58, 138, 0.10), transparent 22%),
+                radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.10), transparent 20%),
+                var(--bg);
+            color: var(--ink);
+        }
+
+        .polytex-quotation .signature {
+            font-family: 'Aref Ruqaa Ink', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .polytex-quotation .avoid-break { page-break-inside: avoid !important; }
+        .polytex-quotation .ltr-text { direction: ltr; display: inline-block; text-align: left; vertical-align: middle; }
+
+        .polytex-quotation .sheet {
+            max-width: 1120px;
+            margin: 28px auto;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .polytex-quotation .hero {
+            padding: 32px 40px 22px;
+            background:
+                linear-gradient(135deg, rgba(30, 58, 138, 0.95), rgba(15, 118, 110, 0.88)),
+                #1e3a8a;
+            color: #fff;
+            position: relative;
+        }
+
+        .polytex-quotation .hero::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 8px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.18), rgba(255,255,255,0.55), rgba(255,255,255,0.18));
+        }
+
+        .polytex-quotation .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .polytex-quotation .section-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--brand);
+            margin-bottom: 14px;
+        }
+
+        .polytex-quotation .card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+        }
+
+        .polytex-quotation .pricing-card {
+            background: linear-gradient(135deg, #f8fbff 0%, #eef8f6 100%);
+            border: 1px solid #d6e6f1;
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(30, 58, 138, 0.07);
+        }
+
+        .polytex-quotation .soft-card {
+            background: linear-gradient(180deg, #f9fbff 0%, #f3f8ff 100%);
+            border: 1px solid #d7e5f6;
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .polytex-quotation .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .polytex-quotation .company-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 18px;
+        }
+
+        .polytex-quotation .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .polytex-quotation .detail-item {
+            background: #f8fafc;
+            border: 1px solid #e5edf6;
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .polytex-quotation .detail-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .polytex-quotation .detail-value {
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .polytex-quotation table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+
+        .polytex-quotation thead tr {
+            background: linear-gradient(90deg, #eaf2ff, #eefaf8);
+        }
+
+        .polytex-quotation th, .polytex-quotation td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e5edf6;
+            vertical-align: top;
+        }
+
+        .polytex-quotation th {
+            color: var(--brand);
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+        .polytex-quotation .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 0;
+        }
+
+        .polytex-quotation .summary-row + .summary-row {
+            border-top: 1px solid #dbe7ec;
+        }
+
+        .polytex-quotation .grand-total {
+            color: var(--brand);
+            font-size: 1.45rem;
+            font-weight: 800;
+        }
+
+        .polytex-quotation .calc-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eaf2ff;
+            color: #1e3a8a;
+            border: 1px solid #c9dcff;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .polytex-quotation .stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ecfeff;
+            color: #0f766e;
+            border: 1px solid #bce7e4;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.86rem;
+            font-weight: 700;
+        }
+
+        .polytex-quotation .highlight-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .polytex-quotation .sheet { margin: 0; border-radius: 0; }
+            .polytex-quotation .hero { padding: 24px 20px 20px; }
+            .polytex-quotation .meta-grid, .polytex-quotation .company-grid, .polytex-quotation .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+/* Keep the supplied document independent of the website chrome and theme. */
+body:has(.polytex-quotation) > header,
+body:has(.polytex-quotation) > footer { display: none; }
+body:has(.polytex-quotation) { background: #eef3f8; }
+.polytex-quotation { display: flow-root; min-height: 100dvh; font-family: "Cairo Variable", "Cairo", sans-serif; font-size: 16px; line-height: 1.5; }
+.polytex-quotation .sheet { width: calc(100% - 32px); }
+.polytex-quotation .quotation-logo { width: 144px; height: auto; max-width: none; }
+.polytex-quotation .section-title { line-height: 1.5; }
+.polytex-quotation .quotation-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+.polytex-quotation :is(.meta-grid,.company-grid,.details-grid,.quotation-columns) > * { min-width: 0; }
+.polytex-quotation :is(p,td,.detail-value,strong) { overflow-wrap: anywhere; }
+.polytex-quotation .quotation-table-scroll { overflow-x: auto; overscroll-behavior-inline: contain; }
+.polytex-quotation table { min-width: 860px; text-align: right; }
+.polytex-quotation .product-description { min-width: 310px; }
+.polytex-quotation .summary-row > strong { text-align: left; }
+.polytex-quotation .summary-row bdi { white-space: nowrap; }
+.polytex-quotation .grand-total { text-align: left; }
+.polytex-quotation .quotation-export { margin: 32px auto; padding: 0 16px; text-align: center; }
+.polytex-quotation .quotation-export button { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 32px; border-radius: 12px; background: #1e3a8a; color: #fff; font-size: 16px; font-weight: 700; border: 1px solid #1e3a8a; box-shadow: 0 15px 25px -12px #1e3a8a50; }
+.polytex-quotation .quotation-export button:hover { background: #1e40af; }
+.polytex-quotation .quotation-export p { color: #6b7280; margin-top: 12px; font-size: 12px; }
+.polytex-quotation .quote-empty { padding: 16px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; margin-top: 12px; }
+@media(max-width:768px) {
+  .polytex-quotation .sheet { width: 100%; }
+  .polytex-quotation .quotation-columns { grid-template-columns: 1fr; }
+  .polytex-quotation .pill { flex-wrap: wrap; font-size: 12px; }
+  .polytex-quotation .hero h1 { font-size: 28px; }
+  .polytex-quotation .summary-row { align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .polytex-quotation .grand-total { font-size: 21px; }
+}
+@media print {
+  @page { size: A4 portrait; margin: 10mm; }
+  html:has(.polytex-quotation), body:has(.polytex-quotation) { width: auto; max-width: none; overflow: visible; background: #fff !important; }
+  body:has(.polytex-quotation) > main { width: 100%; padding: 0; margin: 0; }
+  .polytex-quotation { background: #fff; min-height: 0; font-size: 11px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .polytex-quotation .sheet { width: 100%; max-width: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+  .polytex-quotation .hero { padding: 20px 24px; }
+  .polytex-quotation .hero > div { flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; }
+  .polytex-quotation .hero h1 { font-size: 24px; }
+  .polytex-quotation .hero p { font-size: 13px; }
+  .polytex-quotation .pill { font-size: 10px; }
+  .polytex-quotation .quotation-logo { width: 100px; }
+  .polytex-quotation .sheet > .p-6 { padding: 20px 0 0; }
+  .polytex-quotation .meta-grid, .polytex-quotation .quotation-columns { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .polytex-quotation .company-grid { grid-template-columns: 1.25fr 1fr; gap: 12px; }
+  .polytex-quotation .details-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .polytex-quotation .card, .polytex-quotation .soft-card, .polytex-quotation .pricing-card { padding: 12px; box-shadow: none; break-inside: avoid; }
+  .polytex-quotation .section-title { font-size: 16px; margin-bottom: 10px; }
+  .polytex-quotation :is(.text-lg,.text-xl) { font-size: 13px; }
+  .polytex-quotation :is(.text-sm,.detail-label,.detail-value) { font-size: 10px; }
+  .polytex-quotation :is(.leading-7,.leading-8) { line-height: 1.8; }
+  .polytex-quotation .detail-item { padding: 8px; }
+  .polytex-quotation :is(.stamp,.calc-chip) { font-size: 10px; padding: 5px 8px; }
+  .polytex-quotation .grand-total { font-size: 18px; }
+  .polytex-quotation .summary-row { padding-block: 7px; flex-wrap: wrap; }
+  .polytex-quotation .quotation-export { display: none; }
+  .polytex-quotation .avoid-break:has(table), .polytex-quotation .quotation-table-scroll { break-inside: auto !important; page-break-inside: auto !important; overflow: visible; padding: 0; }
+  .polytex-quotation table { width: 100%; min-width: 0; table-layout: fixed; }
+  .polytex-quotation .product-description { min-width: 0; width: 40%; }
+  .polytex-quotation :is(th,td) { padding: 8px 5px; font-size: 10px; white-space: normal; }
+  .polytex-quotation th:first-child { width: 5%; }
+  .polytex-quotation :is(th,td) bdi { white-space: normal; overflow-wrap: anywhere; }
+  .polytex-quotation thead { display: table-header-group; }
+  .polytex-quotation tr { break-inside: avoid; }
+  .polytex-quotation .signature { font-size: 24px; }
+}

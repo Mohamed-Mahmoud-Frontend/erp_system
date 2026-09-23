@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicQuotationClient } from "@/lib/supabase/public-quotation";
@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import QuoteClient from "./QuoteClient";
 
 export const metadata: Metadata = {
-  title: "عرض سعر - بولي تكس",
+  title: { absolute: "عرض سعر - شركة بولي تكس" },
   robots: { index: false, follow: false, noarchive: true },
   referrer: "no-referrer",
 };

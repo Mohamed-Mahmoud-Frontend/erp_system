@@ -31,12 +31,12 @@
   },
   "dependencies": {
     "@fontsource-variable/cairo": "^5.3.0",
+    "@fontsource/aref-ruqaa-ink": "^5.3.0",
     "@hookform/resolvers": "^5.9.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "decimal.js": "^10.6.0",
     "next": "16.3.4",
-    "openai": "^7.10.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.87.0",

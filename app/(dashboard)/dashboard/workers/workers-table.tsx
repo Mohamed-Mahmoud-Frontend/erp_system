@@ -179,7 +179,7 @@ export default function WorkersTable({ workers }: { workers: WorkerItem[] }) {
                       </td>
 
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center gap-2 flex-wrap justify-center">
+                        <div className="inline-flex items-center gap-2 flex-nowrap justify-center">
                           {/* Details & Correction Link */}
                           <Link
                             href={`/dashboard/workers/${worker.id}`}

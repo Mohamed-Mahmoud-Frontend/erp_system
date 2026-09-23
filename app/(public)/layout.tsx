@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "../globals.css";
+import "./public-design.css";
 import PublicHeader from "./public-header";
 import BrandLogo from "../(dashboard)/brand-logo";
 
@@ -32,7 +33,7 @@ export default function PublicLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
       </head>
-      <body className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 flex flex-col selection:bg-blue-600 selection:text-white">
+      <body className="public-site min-h-screen bg-slate-50 font-sans antialiased text-slate-900 flex flex-col selection:bg-blue-600 selection:text-white">
         {/* Responsive Mobile-Ready Header */}
         <PublicHeader />
 

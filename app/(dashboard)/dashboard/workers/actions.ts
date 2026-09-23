@@ -1,6 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import Decimal from "decimal.js";
+import { payrollSaveError } from "@/lib/payroll-save-error";
+import { allowed, getAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { workerSchema, attendanceSchema, workerTransactionSchema } from "@/lib/validations/worker";
@@ -173,3 +176,41 @@ export async function toggleWorkerStatusAction(workerId: string) {
   };
 }
 
+
+export async function recordWorkerDayAction(_state: unknown, formData: FormData) {
+  const supabase=await createClient();
+  const parsed=attendanceSchema.safeParse({
+    worker_id:formData.get("worker_id"),work_date:formData.get("work_date"),
+    status:formData.get("status"),extra_type:formData.get("extra_type"),
+    extra_units:Number(formData.get("extra_units")||0),
+  });
+  const amounts=["advance","bonus","deduction"].map(key=>Number(formData.get(key)||0));
+  if(!parsed.success || amounts.some(value=>!Number.isFinite(value)||value<0||new Decimal(value).decimalPlaces()>2)){
+    return {success:false,message:"راجع بيانات اليومية والمبالغ. اكتب صفرًا إذا لا توجد معاملة."};
+  }  const {error}=await supabase.rpc("record_worker_day",{
+    p_worker_id:parsed.data.worker_id,p_work_date:parsed.data.work_date,
+    p_status:parsed.data.status,p_extra_type:parsed.data.extra_type,
+    p_extra_units:parsed.data.extra_units,p_advance:amounts[0],p_bonus:amounts[1],p_deduction:amounts[2],
+  });
+  if(error) {
+    console.error("Worker daily save failed", {code:error.code});
+    return {success:false,message:payrollSaveError(error)};
+  }
+  revalidatePath("/dashboard/workers/attendance");
+  revalidatePath("/dashboard/workers/payouts");
+  revalidatePath("/dashboard/workers");
+  return {success:true,message:"تم حفظ الحضور والسلفة والمكافأة والخصم معًا."};
+}
+export async function deleteWorkerDayAction(_state: unknown, formData: FormData) {
+  const id=String(formData.get("id")||"");
+  if(!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(id)) return {success:false,message:"سجل غير صالح."};
+  if(!allowed(await getAccess(),"admin")) return {success:false,message:"الحذف متاح للمدير فقط."};
+  const db=await createClient();
+  const {data,error}=await db.rpc("delete_worker_day",{p_attendance_id:id});
+  if(error) return {success:false,message:error.message||"تعذر حذف اليومية."};
+  if(!data) return {success:false,message:"السجل غير موجود."};
+  revalidatePath("/dashboard/workers/attendance");
+  revalidatePath("/dashboard/workers/payouts");
+  revalidatePath("/dashboard/workers");
+  return {success:true,message:"تم حذف اليومية والمعاملات المرتبطة بها."};
+}

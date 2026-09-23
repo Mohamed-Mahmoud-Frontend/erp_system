@@ -13,7 +13,7 @@ export default async function ClientStatement({ clientId }: { clientId: string }
   const statement = parsed.data;
   const methods: Record<string, string> = { cash: "نقدي", transfer: "تحويل بنكي", cheque: "شيك" };
   return <section className="space-y-4" aria-label="كشف حساب العميل">
-    <h2 className="text-lg font-bold">كشف الحساب</h2>
+    <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-bold">كشف الحساب</h2><Link className="text-blue-700 underline print:hidden" href={`/dashboard/clients/${clientId}/statement-print`}>طباعة / حفظ PDF</Link></div>
     <p className="text-sm text-slate-500">الشيك المرفوض ظاهر بقيمته الأصلية ولا يُحتسب في السداد. الأرصدة تعكس حالة الشيك الحالية.</p>
     <div className="overflow-x-auto"><table className="w-full text-right text-sm">
       <thead className="bg-slate-50"><tr>{["التاريخ", "البيان / الفاتورة", "مدين", "دائن", "الرصيد الجاري"].map(label => <th key={label} className="p-3">{label}</th>)}</tr></thead>

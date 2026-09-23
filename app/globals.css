@@ -133,3 +133,47 @@ body {
 @media(max-width:767px){.erp-content{padding:22px 16px}.topbar-breadcrumb{font-size:11px}.admin-form-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr 1fr}.metric-grid>:last-child:nth-child(odd){grid-column:1/-1}.metric-card p{font-size:12px}.metric-card small{font-size:11px}.welcome-panel h2{font-size:25px}.welcome-panel p{font-size:12px}.erp-content :where(input,select,textarea){font-size:16px}.state-actions{flex-wrap:wrap}.workspace-state{margin:20px 0;padding:35px 20px}.loading-cards{grid-template-columns:1fr}.loading-card{height:85px}.shortcut-card p{font-size:11px}.account-card{margin-top:0}.erp-content :where(form.border,.account-card){padding:20px}.erp-topbar{backdrop-filter:none}}
 @media(prefers-reduced-motion:reduce){.loading-bar,.loading-card{animation:none}}
 @media print{.nav-search,.workspace-loading{display:none!important}}
+.erp-content .overflow-x-auto:has(table){cursor:grab;scrollbar-width:thin}.erp-content .overflow-x-auto.table-dragging{cursor:grabbing;user-select:none}.erp-content table th{white-space:nowrap}.erp-content table tbody tr:hover{background:#f5f9fd}
+@media print{body:has(.client-statement-print) .erp-content>:not(.client-statement-print){display:none!important}body:has(.client-statement-print) .workspace-print-brand{display:none!important}.client-statement-print{max-width:none;padding:0!important}.client-statement-print table{width:100%;min-width:0!important}}
+
+/* Shared readability and interaction polish across the workspace. */
+.erp-shell{--ink:#172b43;--muted:#52657a;--line:#dfe7ef;background:#f5f7fa;font-size:15px;line-height:1.75}
+.erp-content{max-width:1500px}
+.erp-content :where(h1,h2,h3){text-wrap:balance}
+.erp-content :where(p,td,th,label){overflow-wrap:break-word}
+.erp-content :where(input,select,textarea,button){font-family:inherit}
+.erp-content :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea){min-height:44px;font-size:14px;line-height:1.5}
+.erp-content :where(input,select,textarea):focus-visible{outline:2px solid #087da9;outline-offset:2px;border-color:#087da9}
+.erp-content :where(button,a):focus-visible,.nav-item:focus-visible,.mobile-menu:focus-visible{outline:2px solid #12a6d1;outline-offset:3px}
+.erp-content :where(button:not(:disabled)){transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease}
+.erp-content :where(button:not(:disabled):active){transform:translateY(1px)}
+.erp-content :where(form.border,.account-card,.metric-card,.surface-card,.shortcut-card){box-shadow:0 5px 22px #172b4308}
+.erp-content :where(th){font-size:12px;color:#455970}
+.erp-content :where(td){font-size:13px;color:#263c54}
+.erp-content :where([role=status],[role=alert]){line-height:1.8}
+.nav-item{font-size:13px;line-height:1.55}
+.nav-item[aria-current=page]{box-shadow:inset 3px 0 #6ce1ec,0 5px 16px #00000018}
+.topbar-breadcrumb strong{font-weight:750}
+@media(max-width:767px){.erp-shell{font-size:14px}.erp-content{padding:20px 14px}.erp-content :where(form.border,.account-card){padding:18px}.erp-content :where(button){min-height:44px}.erp-content :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea){font-size:16px}.erp-content :where(.overflow-x-auto){scrollbar-width:thin}.erp-content :where(td,th){padding:12px 14px}.topbar-breadcrumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* Tables keep each value and action group intact; overflow stays in the scroller. */
+body :is(.erp-shell .erp-content, .quote-document) table :is(.flex, .inline-flex) {
+  flex-wrap: nowrap;
+  max-width: none;
+}
+@media screen {
+  body :is(.erp-shell .erp-content, .quote-document) table {
+    table-layout: auto;
+  }
+  body :is(.erp-shell .erp-content, .quote-document) table :is(th, td, th *, td *) {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  body :is(.erp-shell .erp-content, .quote-document) :is(.overflow-x-auto, .quotation-table-scroll):has(table) {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+}

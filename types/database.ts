@@ -186,6 +186,10 @@ export type Database = {
           invoice_number: string
           order_id: string
           total: number
+          line_items: Json
+          shipping_amount: number
+          discount_amount: number
+          notes: string
         }
         Insert: {
           created_at?: string
@@ -195,6 +199,10 @@ export type Database = {
           invoice_number: string
           order_id: string
           total: number
+          line_items?: Json
+          shipping_amount?: number
+          discount_amount?: number
+          notes?: string
         }
         Update: {
           created_at?: string
@@ -204,6 +212,10 @@ export type Database = {
           invoice_number?: string
           order_id?: string
           total?: number
+          line_items?: Json
+          shipping_amount?: number
+          discount_amount?: number
+          notes?: string
         }
         Relationships: [
           {
@@ -485,6 +497,9 @@ export type Database = {
           id: string
           supplier_id: string
           type: string
+          reference: string
+          description: string
+          occurred_on: string
         }
         Insert: {
           amount: number
@@ -493,6 +508,9 @@ export type Database = {
           id?: string
           supplier_id: string
           type: string
+          reference?: string
+          description?: string
+          occurred_on?: string
         }
         Update: {
           amount?: number
@@ -501,6 +519,9 @@ export type Database = {
           id?: string
           supplier_id?: string
           type?: string
+          reference?: string
+          description?: string
+          occurred_on?: string
         }
         Relationships: [
           {
@@ -541,6 +562,7 @@ export type Database = {
       }
       worker_transactions: {
         Row: {
+          attendance_id: string | null
           amount: number
           created_at: string
           factory_id: string | null
@@ -549,6 +571,7 @@ export type Database = {
           worker_id: string
         }
         Insert: {
+          attendance_id?: string | null
           amount: number
           created_at?: string
           factory_id?: string | null
@@ -557,6 +580,7 @@ export type Database = {
           worker_id: string
         }
         Update: {
+          attendance_id?: string | null
           amount?: number
           created_at?: string
           factory_id?: string | null
@@ -597,7 +621,7 @@ export type Database = {
       }
     }
     Views: {
-      supplier_balances:{Row:{id:string;factory_id:string|null;name:string;opening_balance:number;balance:number};Relationships:[]}
+      supplier_balances:{Row:{id:string;factory_id:string|null;name:string;opening_balance:number;balance:number;purchases:number;payments:number};Relationships:[]}
       supplier_directory:{Row:{id:string;name:string};Relationships:[]}
       worker_directory:{Row:{id:string;name:string};Relationships:[]}
       attendance_status:{Row:{id:string;worker_id:string;work_date:string;status:string;extra_units:number;extra_type:string;worker_name:string;week_paid:boolean};Relationships:[]}
@@ -608,6 +632,8 @@ export type Database = {
       }
     }
     Functions: {
+      create_invoice_with_items: { Args: { p_order_id: string; p_items: Json; p_shipping: number; p_discount: number; p_notes: string }; Returns: string }
+      create_direct_invoice_with_items: { Args: { p_client_id: string | null; p_client_name: string; p_client_type: string; p_client_phone: string; p_items: Json; p_shipping: number; p_discount: number; p_paid_amount: number; p_notes: string }; Returns: string }
       get_weekly_payroll: { Args: { p_week_start: string; p_search?: string }; Returns: Json }
       pay_workers_week: { Args: { p_worker_ids: string[]; p_week_start: string }; Returns: number }
       calculate_worker_week: { Args: { p_worker_id: string; p_week_start: string }; Returns: { worker_id: string; worker_name: string; factory_id: string | null; daily_wage: number; days_present: number; attendance_bonus: number; transaction_bonus: number; advances: number; deductions: number; net_amount: number }[] }
@@ -632,6 +658,9 @@ export type Database = {
         Args: { p_credit_days: number; p_order_id: string; p_total: number }
         Returns: string
       }
+      record_worker_day: { Args: { p_worker_id: string; p_work_date: string; p_status: string; p_extra_type: string; p_extra_units: number; p_advance: number; p_bonus: number; p_deduction: number }; Returns: string }
+      delete_worker_day: { Args: { p_attendance_id: string }; Returns: boolean }
+      record_priced_material_receipt: { Args: { p_material_id: string; p_supplier_id: string; p_qty: number; p_price_mode: string; p_price: number; p_reference: string; p_occurred_on: string }; Returns: string }
       record_material_movement: {
         Args: {
           p_direction: string
@@ -652,6 +681,7 @@ export type Database = {
         }
         Returns: string
       }
+      record_supplier_transaction_detailed: { Args: { p_supplier_id: string; p_type: string; p_amount: number; p_reference: string; p_description: string; p_occurred_on: string }; Returns: string }
       record_supplier_transaction: {
         Args: { p_amount: number; p_supplier_id: string; p_type: string }
         Returns: string

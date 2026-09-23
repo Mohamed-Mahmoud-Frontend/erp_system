@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {requirePermission} from "@/lib/access";
 import { supplierSchema, supplierTransactionSchema } from "@/lib/validations/material";
 
 export async function createSupplierAction(prevState: unknown, formData: FormData) {
+  await requirePermission("suppliers");
   const supabase = await createClient();
 
   const rawData = {
@@ -36,19 +38,20 @@ export async function createSupplierAction(prevState: unknown, formData: FormDat
 }
 
 export async function recordSupplierTransactionAction(prevState: unknown, formData: FormData) {
+  await requirePermission("suppliers");
   const supabase = await createClient();
 
   const {data:{user},error:authError}=await supabase.auth.getUser();
   if(authError || !user) return {message:'يجب تسجيل الدخول.'};
   const parsed=supplierTransactionSchema.safeParse(Object.fromEntries(formData));
   if(!parsed.success) return {message:'اختر المورد ونوع المعاملة وأدخل مبلغًا موجبًا صالحًا.'};
-  const {supplier_id,type,amount}=parsed.data;
+  const {supplier_id,type,amount,reference,description,occurred_on}=parsed.data;
 
   // Record transaction atomically
-  const { error: rpcError } = await supabase.rpc("record_supplier_transaction", {
+  const { error: rpcError } = await supabase.rpc("record_supplier_transaction_detailed", {
     p_supplier_id: supplier_id,
     p_type: type,
-    p_amount: amount,
+    p_amount: amount, p_reference: reference, p_description: description, p_occurred_on: occurred_on,
   });
 
   if (rpcError) {

@@ -106,7 +106,7 @@ export default async function OrdersPage() {
                           {order.quantity} <small className="text-xs text-slate-500 font-normal">خزان</small>
                         </div>
                         {Array.isArray(order.product_spec) && order.product_spec.length > 0 && (
-                          <div className="mt-1.5 flex flex-wrap gap-1 justify-center max-w-xs mx-auto">
+                          <div className="mt-1.5 flex flex-nowrap gap-1 justify-center mx-auto">
                             {order.product_spec.map((item, i) => {
                               const parsed = orderItemSchema.safeParse(item);
                               return (
@@ -129,7 +129,7 @@ export default async function OrdersPage() {
                       </td>
 
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center gap-2 flex-wrap justify-center">
+                        <div className="inline-flex items-center gap-2 flex-nowrap justify-center">
                           <Link
                             href={`/dashboard/orders/${order.id}`}
                             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-xs"

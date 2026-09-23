@@ -16,6 +16,10 @@ function form(fields) {
   for (const [key, value] of Object.entries(fields)) data.set(key, value);
   data.append('capacity[]', '1000 لتر');
   data.append('quantity[]', '2');
+  data.append('unit_price[]', String(Number(fields.total ?? 0) / 2));
+  data.set('shipping_amount', '0');
+  data.set('discount_amount', '0');
+  data.set('notes', '');
   return data;
 }
 try {

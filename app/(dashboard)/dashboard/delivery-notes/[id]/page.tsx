@@ -30,7 +30,7 @@ export default async function DeliveryNoteDetails({ params }: { params: Promise<
         <div><dt>اسم السائق</dt><dd>{note.driver_name || "—"}</dd></div>
         <div><dt>رقم السيارة</dt><dd>{note.vehicle_number || "—"}</dd></div>
       </dl>
-      <table className={styles.items}><thead><tr><th>م</th><th>الصنف / البيان</th><th>الكمية</th><th>الوحدة</th></tr></thead><tbody>{items.data.map((item, index) => <tr key={index}><td>{index + 1}</td><td>{item.description}</td><td>{item.quantity.toLocaleString("ar-EG", { maximumFractionDigits: 3 })}</td><td>{item.unit}</td></tr>)}</tbody></table>
+      <div className="overflow-x-auto" role="region" aria-label="أصناف إذن التسليم" tabIndex={0}><table className={styles.items}><thead><tr><th>م</th><th>الصنف / البيان</th><th>الكمية</th><th>الوحدة</th></tr></thead><tbody>{items.data.map((item, index) => <tr key={index}><td>{index + 1}</td><td>{item.description}</td><td>{item.quantity.toLocaleString("ar-EG", { maximumFractionDigits: 3 })}</td><td>{item.unit}</td></tr>)}</tbody></table></div>
       {note.notes && <section className={styles.notes}><h2>ملاحظات</h2><p>{note.notes}</p></section>}
       <section className={styles.signatures}><p>أقر باستلام الأصناف والكميات المبينة أعلاه.</p><div><span>المسلّم<br /><br />التوقيع: ....................</span><span>المستلم: {note.recipient_name}<br /><br />التوقيع: ....................</span><span>ختم المصنع<br /><br />....................</span></div></section>
       <footer className={styles.footer}>إذن تسليم مستقل · لا يُعد فاتورة أو إيصال سداد</footer>

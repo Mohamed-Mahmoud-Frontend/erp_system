@@ -1,4 +1,5 @@
 import { requirePermission } from "@/lib/access";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
@@ -25,12 +26,12 @@ export default async function QuotationsPage() {
             استعراض طلبات الأسعار الواردة من الموقع الخارجي أو المسجلة يدوياً
           </p>
         </div>
-        <a
+        <Link
           href="/dashboard/quotations/whatsapp"
           className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
         >
           <span>📱</span> محاكي الواتساب (AI)
-        </a>
+        </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -49,7 +50,7 @@ export default async function QuotationsPage() {
             <tbody className="divide-y divide-slate-100">
               {quotations?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                     لا توجد عروض أسعار
                   </td>
                 </tr>
@@ -88,8 +89,9 @@ export default async function QuotationsPage() {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 font-bold text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"
                       >
-                        📄 عرض الـ PDF
+                        📄 معاينة العرض
                       </a>
+                      <Link href={`/dashboard/quotations/${q.id}`} className="mr-2 inline-flex rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-bold text-slate-800 hover:bg-slate-200">تعديل</Link>
                     </td>
                   </tr>
                 ))
