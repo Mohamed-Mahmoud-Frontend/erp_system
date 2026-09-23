@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   description:
     "مصنع متخصص في تصنيع خزانات المياه البولي إيثيلين بجميع الأحجام والمواصفات المعتمدة صحياً. نخدم المقاولين والتجار والأفراد في جميع أنحاء مصر بضمان حقيقي 10 سنوات.",
   icons: {
-    icon: "/LOGOMOMAYAZ.png",
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/apple-icon.png',
   },
 };
 

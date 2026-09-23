@@ -11,7 +11,13 @@ import DashboardShell, { type NavItem } from './dashboard-shell';
 export const metadata: Metadata = {
   title: { template: '%s | مميز', default: 'مميز | إدارة المصنع' },
   robots: { index: false, follow: false },
-  icons: { icon: '/LOGOMOMAYAZ.png' },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/apple-icon.png',
+  },
 };
 
 export const viewport: Viewport = {
