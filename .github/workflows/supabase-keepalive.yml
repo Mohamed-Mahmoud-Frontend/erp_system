@@ -32,5 +32,5 @@ jobs:
             --connect-timeout 15 --max-time 45 \
             --header "apikey: $SUPABASE_KEY" \
             --output /dev/null \
-            "${SUPABASE_URL%/}/rest/v1/user_access?select=user_id&limit=1"
+            "${SUPABASE_URL%/}/rest/v1/quotations?select=id&limit=1"
           echo 'Supabase database request succeeded.'

@@ -11,6 +11,8 @@ In repository **Settings → Secrets and variables → Actions**, create:
 Copy their values from your local `.env.local`. Do not use the service-role
 key or an administrator password. Anonymous requests remain subject to RLS;
 an empty successful response still confirms that the database was queried.
+The probe selects at most one quotation ID, using the existing anonymous
+SELECT grant and RLS policies; the response is discarded and never logged.
 
 Run the workflow manually after configuring secrets and check that it succeeds.
 The workflow must be on the default branch for scheduled runs.
